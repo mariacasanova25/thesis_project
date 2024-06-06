@@ -8,7 +8,7 @@ class AdherenceScreen extends StatefulWidget {
   const AdherenceScreen({super.key});
 
   @override
-  _AdherenceScreenState createState() => _AdherenceScreenState();
+  State<AdherenceScreen> createState() => _AdherenceScreenState();
 }
 
 class _AdherenceScreenState extends State<AdherenceScreen> {
@@ -33,6 +33,10 @@ class _AdherenceScreenState extends State<AdherenceScreen> {
                     .map((snapshots) => snapshots.docs
                         .map((doc) => Medication.fromSnapshot(doc))),
                 builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                        child: Text('Não foram encontrados medicamentos.'));
+                  }
                   if (snapshot.hasData) {
                     var loadedMeds = snapshot.data!.toList();
                     return Center(

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:thesis_project/screens/adherence.dart';
 import 'package:thesis_project/screens/calendar.dart';
 import 'package:thesis_project/screens/community_forum.dart';
-import 'package:thesis_project/screens/medication.dart';
+import 'package:thesis_project/screens/profile.dart';
 
 class TabsScreen extends StatefulWidget {
+  const TabsScreen({super.key});
   @override
   State<TabsScreen> createState() {
     return _TabsScreenState();
@@ -37,6 +38,17 @@ class _TabsScreenState extends State<TabsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(activePageTitle),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileScreen(),
+                    ));
+              },
+              icon: const Icon(Icons.person_2_sharp))
+        ],
       ),
       body: activePage,
       bottomNavigationBar: BottomNavigationBar(

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:thesis_project/models/new_message.dart';
+import 'package:thesis_project/widgets/new_message.dart';
 import 'package:thesis_project/widgets/message_bubble.dart';
 
 class DiscussionDetailsScreen extends StatelessWidget {

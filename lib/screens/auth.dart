@@ -19,6 +19,8 @@ class _AuthScreenState extends State<AuthScreen> {
   var _enteredEmail = '';
   var _enteredPassword = '';
   var _enteredUsername = '';
+  var _enteredRole = '';
+  var _enteredPatientNr = '';
 
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
@@ -37,7 +39,8 @@ class _AuthScreenState extends State<AuthScreen> {
             .set({
           'username': _enteredUsername,
           'email': _enteredEmail,
-          'role': 'patient'
+          'role': _enteredRole,
+          'patientNr': _enteredPatientNr
         });
       }
     } on FirebaseAuthException catch (error) {
@@ -108,13 +111,57 @@ class _AuthScreenState extends State<AuthScreen> {
                                   _enteredUsername = value!;
                                 },
                               ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            if (!_isLogin)
+                              DropdownButtonFormField<String>(
+                                items: ['Paciente', 'Cuidador']
+                                    .map((role) => DropdownMenuItem(
+                                          value: role,
+                                          child: Text(role),
+                                        ))
+                                    .toList(),
+                                onChanged: (String? value) {
+                                  // This is called when the user selects an item.
+                                  setState(() {
+                                    _enteredRole = value!;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Por favor selecione a função';
+                                  }
+                                  return null;
+                                },
+                                decoration: const InputDecoration(
+                                    labelText: 'Selecione a função'),
+                              ),
+                            const SizedBox(height: 12),
+                            if (!_isLogin)
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                    labelText: 'Número de Utente do Paciente'),
+                                enableSuggestions: false,
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      value.trim().length < 9) {
+                                    return 'Please enter a valid username';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) {
+                                  _enteredPatientNr = value!;
+                                },
+                              ),
                             TextFormField(
                               decoration: const InputDecoration(
                                   labelText: 'Palavra-passe'),
                               obscureText: true,
                               validator: (value) {
                                 if (value == null || value.trim().length < 6) {
-                                  return 'Palavra-pass tem de ter pelo menos 6 caracteres.';
+                                  return 'Palavra-passe tem de ter pelo menos 6 caracteres.';
                                 }
                                 return null;
                               },
@@ -122,9 +169,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 _enteredPassword = value!;
                               },
                             ),
-                            const SizedBox(
-                              height: 12,
-                            ),
+                            const SizedBox(height: 12),
                             ElevatedButton(
                               onPressed: _submit,
                               style: ElevatedButton.styleFrom(

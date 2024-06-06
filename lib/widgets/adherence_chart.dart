@@ -22,7 +22,7 @@ class AdherenceScatterChart extends StatelessWidget {
         days.add(date);
       }
     }
-
+    print(days);
     return days;
   }
 
@@ -117,6 +117,7 @@ class AdherenceScatterChart extends StatelessWidget {
         ScatterSpot(i + 1, adherenceValue),
       );
     }
+    print(scatterSpots);
     return scatterSpots;
   }
 }

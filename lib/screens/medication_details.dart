@@ -2,57 +2,89 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thesis_project/models/medication.dart';
 import 'package:thesis_project/screens/community_forum.dart';
+import 'package:thesis_project/widgets/medication_schedule.dart';
 
 class MedicationDetailsScreen extends StatelessWidget {
   const MedicationDetailsScreen(
-      {super.key,
-      required this.medication,
-      required this.takenMeds,
-      required this.frequency,
-      required this.medicationId,
-      required this.selectedDate});
+      {super.key, required this.medication, required this.selectedDate});
 
-  final String medication;
-  final int takenMeds;
-  final int frequency;
-  final String medicationId;
+  final Medication medication;
+
   final DateTime selectedDate;
 
-  void takenMed() {
+  void takenMed(String selectedDateForm, String time, int index) async {
     final user = FirebaseAuth.instance.currentUser!;
-    final selectedDateForm = DateFormat('yyyy-MM-dd').format(selectedDate);
-    final res = FirebaseFirestore.instance
+    final docRef = FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .collection('medications')
-        .doc(medicationId)
-        .set(
-      {
-        'takenMeds': {
-          selectedDateForm: FieldValue.increment(1),
-        },
-      },
-      SetOptions(merge: true),
-    );
+        .doc(medication.id);
+
+    try {
+      final docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        final data = docSnapshot.data() as Map<String, dynamic>;
+        Map<String, List<String>> takenMeds = medication.takenMeds;
+
+        if (data['takenMeds'] != null) {
+          // Ensure that takenMeds is a Map<String, List<String>>
+          takenMeds =
+              (data['takenMeds'] as Map<String, dynamic>).map((key, value) {
+            return MapEntry(key, List<String>.from(value));
+          });
+        }
+
+        // Check if the time already exists for the selected date
+        if (!takenMeds.containsKey(selectedDateForm)) {
+          takenMeds[selectedDateForm] = [];
+          /* for (int i = 0; i < medication.nrMedsDay; i++) {
+            takenMeds[selectedDateForm]!.add('null');
+            print(takenMeds[selectedDateForm]);
+          }*/
+        }
+
+        // Only add the time if it doesn't already exist
+        if (!takenMeds[selectedDateForm]!.contains(time)) {
+          takenMeds[selectedDateForm]!.add(time);
+          print(takenMeds[selectedDateForm]);
+        }
+
+        // Update the document with the new takenMeds map
+        await docRef.set({
+          'takenMeds': takenMeds,
+        }, SetOptions(merge: true));
+      } else {
+        // Handle case where document does not exist
+        print('Document does not exist.');
+      }
+    } catch (e) {
+      print('Error updating takenMeds: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final dateNow = DateTime.now();
-    final missingMeds = frequency - takenMeds;
+    String selectedDateForm = DateFormat('yyyy-MM-dd').format(selectedDate);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(medication),
+        title: Text(medication.name),
       ),
       //this column includes all infos + message button at the end
       body: Column(
         children: [
+          MedicationSchedule(
+            medication: medication,
+            date: selectedDateForm,
+            takenMedDB: takenMed,
+          ),
           Expanded(
             child: StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('medications')
-                    .doc(medicationId)
+                    .doc(medication.id)
                     .collection('infos')
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -109,20 +141,7 @@ class MedicationDetailsScreen extends StatelessWidget {
                   );
                 }),
           ),
-          if (takenMeds < frequency &&
-              selectedDate ==
-                  DateTime(dateNow.year, dateNow.month, dateNow.day))
-            Column(
-              children: [
-                Text('Falta-lhe ainda tomar $missingMeds comprimido(s) hoje.'),
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      return takenMed();
-                    },
-                    child: const Text('Já tomei'))
-              ],
-            ),
+
           //add a button for messages at the end of the page
           Align(
               alignment: Alignment.bottomCenter,

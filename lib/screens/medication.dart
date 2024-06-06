@@ -20,24 +20,31 @@ class MedicationScreen extends StatelessWidget {
             .doc(user.uid)
             .collection('medications')
             .snapshots()
-            .map((snapshots) =>
-                snapshots.docs.map((doc) => Medication.fromSnapshot(doc))),
-        builder: (context, snapshot) {
+            .map((snapshots) => snapshots.docs
+                .map((doc) => Medication.fromSnapshot(doc))
+                .toList()),
+        builder: (context, AsyncSnapshot<List<Medication>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No medications found'));
+            return const Center(
+                child: Text('Não foram encontrados medicamentos.'));
           }
 
           final loadedMeds = snapshot.data!;
 
           final filteredMeds = loadedMeds.where((medication) {
-            var endDateTime = medication.endDate;
-            var endDate =
-                DateTime(endDateTime.year, endDateTime.month, endDateTime.day);
-            return endDate.isAfter(selectedDate) || endDate == selectedDate;
+            var endDate = DateTime(medication.endDate.year,
+                medication.endDate.month, medication.endDate.day);
+            var startDate = DateTime(medication.startDate.year,
+                medication.startDate.month, medication.startDate.day);
+
+            return (endDate.isAfter(selectedDate) ||
+                    endDate.isAtSameMomentAs(selectedDate)) &&
+                (startDate.isBefore(selectedDate) ||
+                    startDate.isAtSameMomentAs(selectedDate));
           }).toList();
 
           if (filteredMeds.isEmpty) {
@@ -56,9 +63,17 @@ class MedicationScreen extends StatelessWidget {
                 String selectedDateForm =
                     DateFormat('yyyy-MM-dd').format(selectedDate);
                 int takenMeds = 0;
-                if (filteredMeds[index].takenMeds[selectedDateForm] != null) {
-                  takenMeds = filteredMeds[index].takenMeds[selectedDateForm]!;
+                var help = filteredMeds[index].takenMeds[selectedDateForm];
+                if (help != null) {
+                  for (int i = 0; i < help.length; i++) {
+                    if (help[i] != 'null') {
+                      takenMeds++;
+                    }
+                  }
                 }
+
+                print(
+                    'Medication: ${filteredMeds[index].name}, takenMeds: $takenMeds');
 
                 return ListTile(
                   onTap: () {
@@ -66,10 +81,7 @@ class MedicationScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => MedicationDetailsScreen(
-                              medication: filteredMeds[index].name,
-                              frequency: filteredMeds[index].frequency,
-                              takenMeds: takenMeds,
-                              medicationId: filteredMeds[index].id,
+                              medication: filteredMeds[index],
                               selectedDate: selectedDate),
                         ));
                   },
@@ -81,12 +93,12 @@ class MedicationScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Dose: ${filteredMeds[index].dosage}'),
-                      filteredMeds[index].frequency == 1
+                      filteredMeds[index].frequency == 24
                           ? const Text('1 vez ao dia.')
                           : Text(
-                              '${filteredMeds[index].frequency} vezes ao dia.'),
+                              '${filteredMeds[index].nrMedsDay} vezes ao dia.'),
                       Text(
-                          '$takenMeds/${filteredMeds[index].frequency.toString()} comprimidos tomados hoje.'),
+                          '$takenMeds/${filteredMeds[index].nrMedsDay} comprimidos tomados hoje.'),
                       Text('Termina em: $daysLeft dias.'),
                     ],
                   ),
