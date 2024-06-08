@@ -22,7 +22,6 @@ class AdherenceScatterChart extends StatelessWidget {
         days.add(date);
       }
     }
-    print(days);
     return days;
   }
 
@@ -111,13 +110,13 @@ class AdherenceScatterChart extends StatelessWidget {
     List<ScatterSpot> scatterSpots = [];
     List<DateTime> daysList = generateDaysList();
     for (int i = 0; i < daysList.length; i++) {
-      double adherenceValue = double.parse(data.getAdherence(daysList[i]));
+      double adherenceValue = data.getAdherence(daysList[i]);
+      print("CHART ${data.getAdherence(daysList[i])} ${daysList[i]}");
 
       scatterSpots.add(
         ScatterSpot(i + 1, adherenceValue),
       );
     }
-    print(scatterSpots);
     return scatterSpots;
   }
 }

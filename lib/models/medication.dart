@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -44,9 +43,10 @@ class Medication {
     );
   }
 
-  String getAdherence(DateTime date) {
-    // Placeholder for adherence calculation
-    return '0';
+  double getAdherence(DateTime date) {
+    return (getTakenMedsDay(DateFormat('yyyy-MM-dd').format(date)) /
+            nrMedsDay) *
+        100;
   }
 
   List<DateTime> generateDaysList() {
@@ -54,10 +54,12 @@ class Medication {
     DateTime date = startDate;
 
     while (date.isBefore(DateTime.now()) ||
-        date.isAtSameMomentAs(DateTime.now())) {
+        date.isAtSameMomentAs(DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day))) {
       days.add(DateTime(date.year, date.month, date.day));
       date = date.add(const Duration(days: 1));
     }
+    days.add(DateTime(date.year, date.month, date.day));
 
     return days;
   }
@@ -66,12 +68,15 @@ class Medication {
     int streak = 0;
     List<DateTime> dates = generateDaysList();
     for (DateTime date in dates) {
-      if (double.parse(getAdherence(date)) == 100.0) {
+      if (getAdherence(date) == 100.0) {
         streak++;
       } else {
         streak = 0;
       }
+      print(date);
+      print(getAdherence(date));
     }
+
     return streak;
   }
 
@@ -86,7 +91,7 @@ class Medication {
     return 0;
   }
 
-  List<String> getSchedule(String date, String startHour) {
+  List<String> getSchedule(String startHour) {
     List<String> schedule = [];
 
     List<String> content = startHour.split('h');

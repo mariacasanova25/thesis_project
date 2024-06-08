@@ -39,15 +39,15 @@ class MedicationDetailsScreen extends StatelessWidget {
         // Check if the time already exists for the selected date
         if (!takenMeds.containsKey(selectedDateForm)) {
           takenMeds[selectedDateForm] = [];
-          /* for (int i = 0; i < medication.nrMedsDay; i++) {
+          for (int i = 0; i < medication.nrMedsDay; i++) {
             takenMeds[selectedDateForm]!.add('null');
             print(takenMeds[selectedDateForm]);
-          }*/
+          }
         }
 
         // Only add the time if it doesn't already exist
         if (!takenMeds[selectedDateForm]!.contains(time)) {
-          takenMeds[selectedDateForm]!.add(time);
+          takenMeds[selectedDateForm]![index] = time;
           print(takenMeds[selectedDateForm]);
         }
 
