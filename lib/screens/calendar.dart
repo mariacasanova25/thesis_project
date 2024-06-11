@@ -5,70 +5,54 @@ class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
 
   @override
-  State<CalendarScreen> createState() {
-    return _CalendarScreenState();
-  }
+  State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  DateTime selectedDay = DateTime.now();
+  var selectedDay = DateTime.now();
 
-  @override
-  void initState() {
-    selectedDay = DateTime.now();
-    super.initState();
-  }
-
-  List<DateTime> generateDaysList(int year, int month) {
-    List<DateTime> days = [];
-
-    for (int i = 2; i > 0; i--) {
-      DateTime date = DateTime.now().subtract(Duration(days: i));
-      days.add(date);
-    }
-    days.add(DateTime.now());
-    for (int i = 1; i <= 3; i++) {
-      DateTime date = DateTime.now().add(Duration(days: i));
-      days.add(date);
-    }
-    return days;
-  }
+  List<DateTime> daysList = [
+    for (int i = 2; i > 0; i--) DateTime.now().subtract(Duration(days: i)),
+    DateTime.now(),
+    for (int i = 1; i <= 5; i++) DateTime.now().add(Duration(days: i)),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    List<DateTime> genList =
-        generateDaysList(DateTime.now().year, DateTime.now().month);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar'),
-      ),
-      body: Column(children: [
-        Container(
+    return Column(
+      children: [
+        SizedBox(
           height: 100,
-          child: ListView.builder(
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             scrollDirection: Axis.horizontal,
-            itemCount: genList.length,
-            itemBuilder: (context, index) => Container(
-              width: 150,
-              child: ListTile(
-                title: Text(genList[index].day.toString()),
-                textColor: selectedDay.day == genList[index].day
-                    ? Colors.purple
-                    : Colors.black,
-                onTap: () {
-                  setState(() {
-                    selectedDay = genList[index];
-                  });
+            itemCount: daysList.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final day = daysList[index];
+              return ChoiceChip(
+                showCheckmark: false,
+                label: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(day.day.toString()),
+                    const Text('JUN'),
+                  ],
+                ),
+                selected: selectedDay.day == day.day,
+                onSelected: (_) {
+                  setState(() => selectedDay = day);
                 },
-              ),
-            ),
+              );
+            },
           ),
         ),
+        //TODO use pageView
         MedicationScreen(
           selectedDate:
               DateTime(selectedDay.year, selectedDay.month, selectedDay.day),
         )
-      ]),
+      ],
     );
   }
 }

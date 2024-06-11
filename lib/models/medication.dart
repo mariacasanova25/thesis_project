@@ -8,7 +8,7 @@ class Medication {
     required this.endDate,
     required this.frequency,
     required this.startDate,
-    required this.startTime,
+    required this.times,
     required this.takenMeds,
     required this.id,
   });
@@ -19,7 +19,7 @@ class Medication {
   final DateTime endDate;
   final DateTime startDate;
   final int frequency;
-  final String startTime;
+  final List<String> times;
   final Map<String, List<String>> takenMeds;
 
   factory Medication.fromSnapshot(
@@ -31,13 +31,16 @@ class Medication {
           key, value != null ? List<String>.from(value) : <String>[]);
     });
 
+    final List<String> times =
+        (data['times'] as List?)?.cast<String>().toList() ?? [];
+    print('TIMES $times');
     return Medication(
       name: data['name'],
       dosage: data['dosage'],
       endDate: data['endDate'].toDate(),
       frequency: data['frequency'],
       startDate: data['startDate'].toDate(),
-      startTime: data['startTime'],
+      times: times,
       takenMeds: takenMeds,
       id: snapshot.id,
     );

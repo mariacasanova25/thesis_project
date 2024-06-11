@@ -6,60 +6,79 @@ import 'package:thesis_project/screens/profile.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
+
   @override
-  State<TabsScreen> createState() {
-    return _TabsScreenState();
-  }
+  State<TabsScreen> createState() => _TabsScreenState();
 }
 
 class _TabsScreenState extends State<TabsScreen> {
-  int _selectedPageIndex = 0;
+  final pageController = PageController();
+  int currentPage = 0;
 
-  void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-    });
+  void selectPage(int index) {
+    pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  String get activePageTitle => switch (currentPage) {
+        0 => 'Os Meus Medicamentos',
+        1 => 'Fórum Comunitário',
+        2 => 'Adesão',
+        _ => '',
+      };
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget activePage = const CalendarScreen();
-    var activePageTitle = 'Os Meus Medicamentos';
-
-    if (_selectedPageIndex == 1) {
-      activePage = const CommunityForumScreen();
-      activePageTitle = 'Fórum Comunitário';
-    }
-    if (_selectedPageIndex == 2) {
-      activePage = const AdherenceScreen();
-      activePageTitle = 'Adesão';
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(activePageTitle),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProfileScreen(),
-                    ));
-              },
-              icon: const Icon(Icons.person_2_sharp))
+            icon: const Icon(Icons.person_2_outlined),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ));
+            },
+          )
         ],
       ),
-      body: activePage,
+      body: PageView(
+        controller: pageController,
+        onPageChanged: (page) => setState(() => currentPage = page),
+        children: const [
+          CalendarScreen(),
+          CommunityForumScreen(),
+          AdherenceScreen(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        onTap: _selectPage,
-        currentIndex: _selectedPageIndex,
+        onTap: selectPage,
+        currentIndex: currentPage,
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.medication_outlined), label: 'Medicamentos'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Fórum'),
+            icon: Icon(Icons.medication_outlined),
+            label: 'Medicamentos',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.multiline_chart), label: 'Adesão'),
+            icon: Icon(Icons.people_outline),
+            label: 'Fórum',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.multiline_chart),
+            label: 'Adesão',
+          ),
         ],
       ),
     );

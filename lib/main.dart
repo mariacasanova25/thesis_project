@@ -22,7 +22,8 @@ class App extends StatelessWidget {
         title: 'FlutterChat',
         theme: ThemeData().copyWith(
           colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 138, 99, 235)),
+            seedColor: const Color.fromARGB(255, 138, 99, 235),
+          ),
         ),
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
@@ -31,7 +32,7 @@ class App extends StatelessWidget {
               return const SplashScreen();
             }
             if (snapshot.hasData) {
-              return TabsScreen();
+              return const TabsScreen();
             }
 
             return const AuthScreen();

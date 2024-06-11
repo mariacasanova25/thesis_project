@@ -56,14 +56,14 @@ class MedicationScreen extends StatelessWidget {
           return ListView.builder(
               itemCount: filteredMeds.length,
               itemBuilder: (context, index) {
+                final med = filteredMeds[index];
                 var currentDate = DateTime.now();
-                var daysLeft =
-                    filteredMeds[index].endDate.difference(currentDate).inDays;
+                var daysLeft = med.endDate.difference(currentDate).inDays;
 
                 String selectedDateForm =
                     DateFormat('yyyy-MM-dd').format(selectedDate);
                 int takenMeds = 0;
-                var help = filteredMeds[index].takenMeds[selectedDateForm];
+                var help = med.takenMeds[selectedDateForm];
                 if (help != null) {
                   for (int i = 0; i < help.length; i++) {
                     if (help[i] != 'null') {
@@ -72,42 +72,65 @@ class MedicationScreen extends StatelessWidget {
                   }
                 }
 
-                print(
-                    'Medication: ${filteredMeds[index].name}, takenMeds: $takenMeds');
+                print('Medication: ${med.name}, takenMeds: $takenMeds');
 
                 return ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MedicationDetailsScreen(
-                              medication: filteredMeds[index],
-                              selectedDate: selectedDate),
-                        ));
-                  },
                   title: Text(
-                    filteredMeds[index].name,
-                    style: const TextStyle(fontSize: 20),
+                    med.name,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Dose: ${filteredMeds[index].dosage}'),
-                      filteredMeds[index].frequency == 24
-                          ? const Text('1 vez ao dia.')
-                          : Text(
-                              '${filteredMeds[index].nrMedsDay} vezes ao dia.'),
-                      Text(
-                          '$takenMeds/${filteredMeds[index].nrMedsDay} comprimidos tomados hoje.'),
+                      Text('Dose: ${med.dosage}'),
                       Text('Termina em: $daysLeft dias.'),
+                      SizedBox(height: 8),
+                      // Row(
+                      //   children: [
+                      //     for (int i = 0; i < med.nrMedsDay; i++) ...[
+                      //       Expanded(
+                      //         child: LinearProgressIndicator(
+                      //           value: i < takenMeds ? 1 : 0,
+                      //           borderRadius: BorderRadius.circular(4),
+                      //         ),
+                      //       ),
+                      //       SizedBox(width: 4),
+                      //     ],
+                      //   ],
+                      // ),
+                      // med.frequency == 24
+                      //     ? const Text('1 vez ao dia.')
+                      //     : Text('${med.nrMedsDay} vezes ao dia.'),
+                      // Text(
+                      //     '$takenMeds/${med.nrMedsDay} comprimidos tomados hoje.'),
                     ],
                   ),
-                  leading: const Icon(
-                    Icons.medication,
-                    size: 64,
-                    color: Colors.purple,
+                  leading: CircularProgressIndicator(
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primaryContainer,
+                    value: takenMeds / med.nrMedsDay,
                   ),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                  // leading: Icon(
+                  //   Icons.medication,
+                  //   size: 64,
+                  //   color: Theme.of(context).colorScheme.primary,
+                  // ),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 18,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MedicationDetailsScreen(
+                          medication: med,
+                          selectedDate: selectedDate,
+                        ),
+                      ),
+                    );
+                  },
                 );
               });
         },
