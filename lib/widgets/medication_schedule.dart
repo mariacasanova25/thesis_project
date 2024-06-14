@@ -1,5 +1,5 @@
-import 'dart:math';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:thesis_project/models/medication.dart';
 
@@ -21,28 +21,43 @@ class MedicationSchedule extends StatefulWidget {
 class _MedicationScheduleState extends State<MedicationSchedule> {
   late List<bool> medsTakenBool;
   late List<String> schedule;
+  bool changed = false;
 
   @override
   void initState() {
     super.initState();
     int takenMeds = widget.medication.getTakenMedsDay(widget.date);
-    //change how this medsTakenBool is generated with index
 
     medsTakenBool = List<bool>.generate(widget.medication.nrMedsDay, (index) {
       return index < takenMeds;
     });
-    schedule = widget.medication.getSchedule('8h00');
+
+    schedule = widget.medication.times.isEmpty
+        ? widget.medication.getSchedule('8h00')
+        : widget.medication.times;
+
+    _initializeScheduleInFirestore();
 
     var takenMedsMap = widget.medication.takenMeds[widget.date];
-
     if (takenMedsMap != null) {
       for (int i = 0; i < widget.medication.nrMedsDay; i++) {
-        if (takenMedsMap[i] == 'null') {
-          medsTakenBool[i] = false;
-        } else {
-          medsTakenBool[i] = true;
-        }
+        medsTakenBool[i] = takenMedsMap[i] != 'null';
       }
+    }
+  }
+
+  Future<void> _initializeScheduleInFirestore() async {
+    final user = FirebaseAuth.instance.currentUser!;
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('medications')
+        .doc(widget.medication.id);
+
+    if (widget.medication.times.isEmpty || changed) {
+      await docRef.set({
+        'times': schedule,
+      }, SetOptions(merge: true));
     }
   }
 
@@ -50,7 +65,6 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        // Use dialogContext here
         return AlertDialog(
           title: const Text('Toma de Medicamento'),
           content: const Text('Tomou o medicamento a que horas?'),
@@ -63,9 +77,8 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
             ),
             TextButton(
               onPressed: () async {
-                Navigator.pop(dialogContext); // Close the dialog first
+                Navigator.pop(dialogContext);
 
-                // Ensure context is available in post-frame callback
                 await Future.delayed(Duration.zero);
 
                 TimeOfDay? picked = await showTimePicker(
@@ -74,9 +87,12 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
                 );
 
                 if (picked != null) {
-                  String formattedTime = '${picked.hour}h${picked.minute}';
-                  print(formattedTime);
-                  // Call a function to update state and database outside of the dialog context
+                  String formattedHour =
+                      picked.hour < 10 ? '0${picked.hour}' : '${picked.hour}';
+                  String formattedMinutes = picked.minute < 10
+                      ? '0${picked.minute}'
+                      : '${picked.minute}';
+                  String formattedTime = '${formattedHour}h$formattedMinutes';
                   _updateMedTaken(formattedTime, index, context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -88,7 +104,6 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
             ),
             TextButton(
               onPressed: () {
-                // Call a function to update state and database outside of the dialog context
                 _updateMedTaken(time, index, context);
               },
               child: Text('Tomei às $time'),
@@ -99,10 +114,19 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
     );
   }
 
-  void _updateMedTaken(String time, int index, BuildContext context) {
+  Future<void> _updateMedTaken(
+      String time, int index, BuildContext context) async {
+    widget.takenMedDB(widget.date, time, index);
     setState(() {
       medsTakenBool[index] = true;
-      widget.takenMedDB(widget.date, time, index);
+      widget.medication.takenMeds.update(widget.date, (times) {
+        times[index] = time;
+        return times;
+      }, ifAbsent: () {
+        var times = List<String>.filled(widget.medication.nrMedsDay, 'null');
+        times[index] = time;
+        return times;
+      });
     });
   }
 
@@ -121,6 +145,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
             schedule[i + index] = schedule2[i];
           }
         }
+        _initializeScheduleInFirestore();
       });
     }
   }
@@ -138,38 +163,66 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
           missingMeds == 0
               ? const Text('Já tomou este medicamento hoje.')
               : Text('Falta-lhe ainda tomar $missingMeds comprimido(s) hoje.'),
-          ...List.generate(widget.medication.getSchedule('8h00').length,
-              (index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Center(
-                child: Row(
+          Column(
+            children: List.generate(schedule.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Column(
                   children: [
-                    Text(
-                      schedule[index],
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(width: 16),
-                    medsTakenBool[index]
-                        ? const Icon(Icons.check_circle, color: Colors.green)
-                        : FilledButton(
+                    Row(
+                      children: [
+                        Text(
+                          medsTakenBool[index]
+                              ? widget.medication.takenMeds[widget.date]![index]
+                              : schedule[index],
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(width: 16),
+                        medsTakenBool[index]
+                            ? const Icon(Icons.check_circle,
+                                color: Colors.green)
+                            : FilledButton(
+                                onPressed: () {
+                                  takenMed(index, context, schedule[index]);
+                                },
+                                child: const Text('Já tomei'),
+                              ),
+                        const SizedBox(width: 16),
+                        if (!medsTakenBool[index])
+                          FilledButton(
                             onPressed: () {
-                              takenMed(index, context, schedule[index]);
+                              changed = true;
+                              _editSchedule(index);
                             },
-                            child: const Text('Já tomei'),
+                            child: const Text('Editar horário'),
                           ),
-                    const SizedBox(width: 16),
-                    if (!medsTakenBool[index])
-                      FilledButton(
-                          onPressed: () {
-                            _editSchedule(index);
-                          },
-                          child: const Text('Editar horário'))
+                        const SizedBox(width: 16),
+                      ],
+                    ),
+                    if (index - 1 >= 0 &&
+                        medsTakenBool[index - 1] == true &&
+                        medsTakenBool[index] == false &&
+                        widget.medication.getDifferenceTime(
+                                widget.medication
+                                    .takenMeds[widget.date]![index - 1],
+                                schedule[index]) <
+                            widget.medication.frequency)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.warning, color: Colors.purple),
+                            const SizedBox(width: 4),
+                            Text(
+                                'Perigo! Intervalo menor que ${widget.medication.frequency} horas. Edite o horário.'),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+          ),
         ],
       ),
     );

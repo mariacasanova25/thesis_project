@@ -109,4 +109,21 @@ class Medication {
     }
     return schedule;
   }
+
+  int getDifferenceTime(String time1, String time2) {
+    List<String> content1 = time1.split('h');
+    int hour1 = int.parse(content1[0]);
+    int minutes1 = int.parse(content1[1]);
+
+    List<String> content2 = time2.split('h');
+    int hour2 = int.parse(content2[0]);
+    int minutes2 = int.parse(content2[1]);
+
+    int totalMinutes1 = hour1 * 60 + minutes1;
+    int totalMinutes2 = hour2 * 60 + minutes2;
+
+    int differenceInMinutes = (totalMinutes2 - totalMinutes1).abs();
+
+    return differenceInMinutes ~/ 60;
+  }
 }

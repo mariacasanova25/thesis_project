@@ -14,7 +14,7 @@ class MedicationDetailsScreen extends StatelessWidget {
 
   final DateTime selectedDate;
 
-  void takenMed(String selectedDateForm, String time, int index) async {
+  Future<void> takenMed(String selectedDateForm, String time, int index) async {
     final user = FirebaseAuth.instance.currentUser!;
     final docRef = FirebaseFirestore.instance
         .collection('users')
