@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:thesis_project/models/medication.dart';
@@ -13,56 +12,6 @@ class MedicationDetailsScreen extends StatelessWidget {
   final Medication medication;
 
   final DateTime selectedDate;
-
-  Future<void> takenMed(String selectedDateForm, String time, int index) async {
-    final user = FirebaseAuth.instance.currentUser!;
-    final docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('medications')
-        .doc(medication.id);
-
-    try {
-      final docSnapshot = await docRef.get();
-      if (docSnapshot.exists) {
-        final data = docSnapshot.data() as Map<String, dynamic>;
-        Map<String, List<String>> takenMeds = medication.takenMeds;
-
-        if (data['takenMeds'] != null) {
-          // Ensure that takenMeds is a Map<String, List<String>>
-          takenMeds =
-              (data['takenMeds'] as Map<String, dynamic>).map((key, value) {
-            return MapEntry(key, List<String>.from(value));
-          });
-        }
-
-        // Check if the time already exists for the selected date
-        if (!takenMeds.containsKey(selectedDateForm)) {
-          takenMeds[selectedDateForm] = [];
-          for (int i = 0; i < medication.nrMedsDay; i++) {
-            takenMeds[selectedDateForm]!.add('null');
-            print(takenMeds[selectedDateForm]);
-          }
-        }
-
-        // Only add the time if it doesn't already exist
-        if (!takenMeds[selectedDateForm]!.contains(time)) {
-          takenMeds[selectedDateForm]![index] = time;
-          print(takenMeds[selectedDateForm]);
-        }
-
-        // Update the document with the new takenMeds map
-        await docRef.set({
-          'takenMeds': takenMeds,
-        }, SetOptions(merge: true));
-      } else {
-        // Handle case where document does not exist
-        print('Document does not exist.');
-      }
-    } catch (e) {
-      print('Error updating takenMeds: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +27,6 @@ class MedicationDetailsScreen extends StatelessWidget {
           MedicationSchedule(
             medication: medication,
             date: selectedDateForm,
-            takenMedDB: takenMed,
           ),
           Expanded(
             child: StreamBuilder(

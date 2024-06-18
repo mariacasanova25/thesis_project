@@ -2,17 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:thesis_project/models/medication.dart';
+import 'package:thesis_project/widgets/taken_med.dart';
 
 class MedicationSchedule extends StatefulWidget {
-  const MedicationSchedule(
-      {super.key,
-      required this.date,
-      required this.medication,
-      required this.takenMedDB});
+  const MedicationSchedule({
+    super.key,
+    required this.date,
+    required this.medication,
+  });
 
   final Medication medication;
   final String date;
-  final void Function(String date, String time, int index) takenMedDB;
 
   @override
   State<MedicationSchedule> createState() => _MedicationScheduleState();
@@ -96,7 +96,8 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
                   _updateMedTaken(formattedTime, index, context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please select a time.')),
+                    const SnackBar(
+                        content: Text('Selecione um horário, por favor.')),
                   );
                 }
               },
@@ -105,6 +106,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
             TextButton(
               onPressed: () {
                 _updateMedTaken(time, index, context);
+                Navigator.pop(context);
               },
               child: Text('Tomei às $time'),
             ),
@@ -116,7 +118,12 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
 
   Future<void> _updateMedTaken(
       String time, int index, BuildContext context) async {
-    widget.takenMedDB(widget.date, time, index);
+    TakenMed takenMed = TakenMed();
+    takenMed.takenMed(
+        medicationId: widget.medication.id,
+        timesIndex: index,
+        selectedDate: widget.date,
+        pickedTime: time);
     setState(() {
       medsTakenBool[index] = true;
       widget.medication.takenMeds.update(widget.date, (times) {
