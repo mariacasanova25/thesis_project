@@ -82,14 +82,6 @@ class _AuthScreenState extends State<AuthScreen> {
                               keyboardType: TextInputType.emailAddress,
                               autocorrect: false,
                               textCapitalization: TextCapitalization.none,
-                              /*validator: (value) {
-                                if (value == null ||
-                                    value.trim().isEmpty ||
-                                    !value.contains('@')) {
-                                  return 'Insira um email válido.';
-                                }
-                                return null;
-                              },*/
                               onSaved: (value) {
                                 _enteredEmail = value!;
                               },

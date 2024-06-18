@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:thesis_project/models/medication.dart';
-import 'package:thesis_project/screens/community_forum.dart';
+import 'package:thesis_project/widgets/medication_info_card.dart';
 import 'package:thesis_project/widgets/medication_schedule.dart';
+import 'package:thesis_project/widgets/send_message_button.dart';
 
 class MedicationDetailsScreen extends StatelessWidget {
   const MedicationDetailsScreen(
@@ -25,7 +26,7 @@ class MedicationDetailsScreen extends StatelessWidget {
       body: Column(
         children: [
           MedicationSchedule(
-            medication: medication,
+            medicationId: medication.id,
             date: selectedDateForm,
           ),
           Expanded(
@@ -51,71 +52,15 @@ class MedicationDetailsScreen extends StatelessWidget {
                       List<String> content =
                           loadedInfos[index].data()['content'].split(',');
 
-                      return Column(children: [
-                        SizedBox(
-                          width: 300,
-                          //one card for each info
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Center(
-                                    child: Text(
-                                      loadedInfos[index].data()['title'],
-                                      style: const TextStyle(fontSize: 16),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ), //for info's title
-                                  const SizedBox(height: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: content
-                                        .map((e) => Text(e.trim()))
-                                        .toList(),
-                                  ) //for information content
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16)
-                      ]);
+                      return MedicationInfoCard(
+                          title: loadedInfos[index].data()['title'],
+                          content: content);
                     },
                   );
                 }),
           ),
-
           //add a button for messages at the end of the page
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                children: [
-                  const Text('Continua com dúvidas?'),
-                  Padding(
-                      padding: const EdgeInsets.all(
-                          16.0), // Add padding to avoid hitting the edge
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.messenger_outline),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const CommunityForumScreen(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                            textStyle: const TextStyle(fontSize: 16)),
-                        label: const Text("Enviar Mensagem"),
-                      ))
-                ],
-              ))
+          const SendMessageButton()
         ],
       ),
     );

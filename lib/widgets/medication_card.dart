@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:thesis_project/widgets/taken_med.dart';
 
 class MedicationCard extends StatelessWidget {
-  const MedicationCard(
-      {super.key,
-      required this.onResponse,
-      required this.medicationId,
-      required this.selectedDate,
-      required this.timesIndex});
+  const MedicationCard({
+    super.key,
+    required this.onResponse,
+    required this.medicationId,
+    required this.selectedDate,
+    required this.timesIndex,
+  });
 
   final Function(bool) onResponse;
   final String selectedDate;
@@ -33,7 +34,7 @@ class MedicationCard extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    final takenMed = TakenMed();
+                    TakenMed takenMed = TakenMed();
                     takenMed.takenMed(
                         medicationId: medicationId,
                         selectedDate: selectedDate,

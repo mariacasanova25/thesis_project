@@ -51,7 +51,7 @@ class TakenMed {
         // Handle case where document does not exist
         print('Document does not exist.');
       }
-      //AwesomeNotifications().cancel(timesIndex);
+      AwesomeNotifications().cancel(timesIndex);
       print('REMOVED');
     } catch (e) {
       print('Error updating takenMeds: $e');

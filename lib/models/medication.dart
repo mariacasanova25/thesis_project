@@ -25,6 +25,7 @@ class Medication {
   factory Medication.fromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data();
+
     final Map<String, List<String>> takenMeds =
         (data!['takenMeds'] as Map<String, dynamic>).map((key, value) {
       return MapEntry(
@@ -33,6 +34,7 @@ class Medication {
 
     final List<String> times =
         (data['times'] as List?)?.cast<String>().toList() ?? [];
+
     return Medication(
       name: data['name'],
       dosage: data['dosage'],
