@@ -1,64 +1,53 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:thesis_project/models/medication.dart';
+import 'package:thesis_project/repositories/medication_repository.dart';
 import 'package:thesis_project/widgets/medication_info_card.dart';
 import 'package:thesis_project/widgets/medication_schedule.dart';
 import 'package:thesis_project/widgets/send_message_button.dart';
 
-class MedicationDetailsScreen extends StatelessWidget {
+class MedicationDetailsScreen extends ConsumerWidget {
   const MedicationDetailsScreen(
-      {super.key, required this.medication, required this.selectedDate});
+      {super.key, required this.medicationId, required this.selectedDate});
 
-  final Medication medication;
+  final String medicationId;
 
   final DateTime selectedDate;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     String selectedDateForm = DateFormat('yyyy-MM-dd').format(selectedDate);
-
+    final medicationAsync = ref.watch(fetchMedicationProvider(medicationId));
     return Scaffold(
       appBar: AppBar(
-        title: Text(medication.name),
+        title: Text(medicationId),
       ),
       //this column includes all infos + message button at the end
       body: Column(
         children: [
           MedicationSchedule(
-            medicationId: medication.id,
+            medicationId: medicationId,
             date: selectedDateForm,
           ),
           Expanded(
-            child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('medications')
-                    .doc(medication.id)
-                    .collection('infos')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+              child: medicationAsync.when(
+            data: (medication) {
+              return ListView.builder(
+                itemCount: medication.infos.length,
+                itemBuilder: (context, index) {
+                  String key = medication.infos.keys.elementAt(index);
+                  String value = medication.infos[key]!;
+                  List<String> content = value.split(',');
 
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text('No medications found'));
-                  }
-
-                  final loadedInfos = snapshot.data!.docs;
-                  return ListView.builder(
-                    itemCount: loadedInfos.length,
-                    itemBuilder: (context, index) {
-                      List<String> content =
-                          loadedInfos[index].data()['content'].split(',');
-
-                      return MedicationInfoCard(
-                          title: loadedInfos[index].data()['title'],
-                          content: content);
-                    },
-                  );
-                }),
-          ),
+                  return MedicationInfoCard(title: key, content: content);
+                },
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) => const SizedBox(
+              width: 10,
+            ),
+          )),
           //add a button for messages at the end of the page
           const SendMessageButton()
         ],

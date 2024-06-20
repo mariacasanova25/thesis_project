@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:thesis_project/models/medication.dart';
+import 'package:thesis_project/models/prescription.dart';
 import 'package:thesis_project/widgets/taken_med.dart';
 
 class MedicationSchedule extends StatefulWidget {
@@ -22,7 +22,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
   late List<String> schedule;
   bool changed = false;
 
-  void _initializeScheduleInFirestore(Medication medication) async {
+  void _initializeScheduleInFirestore(Prescription medication) async {
     final user = FirebaseAuth.instance.currentUser!;
     final docRef = FirebaseFirestore.instance
         .collection('users')
@@ -38,7 +38,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
   }
 
   void takenMed(
-      int index, BuildContext context, String time, Medication medication) {
+      int index, BuildContext context, String time, Prescription medication) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -94,7 +94,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
   }
 
   Future<void> _updateMedTaken(String time, int index, BuildContext context,
-      Medication medication) async {
+      Prescription medication) async {
     TakenMed takenMed = TakenMed();
     await takenMed.takenMed(
       medicationId: medication.id,
@@ -114,7 +114,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Future<void> _editSchedule(int index, Medication medication) async {
+  Future<void> _editSchedule(int index, Prescription medication) async {
     TimeOfDay? selectedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(DateTime.now()),
@@ -153,7 +153,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
         } else if (!snapshot.hasData || !snapshot.data!.exists) {
           return const Center(child: Text('Medication data not found'));
         } else {
-          final medication = Medication.fromSnapshot(snapshot.data!);
+          final medication = Prescription.fromSnapshot(snapshot.data!);
 
           if (medication.times.isEmpty) {
             schedule = medication.getSchedule('8h00');

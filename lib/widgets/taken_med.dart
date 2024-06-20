@@ -1,7 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:thesis_project/models/medication.dart';
+import 'package:thesis_project/models/prescription.dart';
 
 class TakenMed {
   Future<void> takenMed(
@@ -19,7 +19,7 @@ class TakenMed {
     try {
       final docSnapshot = await docRef.get();
       if (docSnapshot.exists) {
-        final medication = Medication.fromSnapshot(docSnapshot);
+        final medication = Prescription.fromSnapshot(docSnapshot);
 
         Map<String, List<String>> takenMeds = medication.takenMeds;
 

@@ -37,7 +37,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(day.day.toString()),
-                    const Text('JUN'),
+                    Text(day.month.toString().toUpperCase()),
                   ],
                 ),
                 selected: selectedDay.day == day.day,

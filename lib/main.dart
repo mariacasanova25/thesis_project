@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/screens/auth.dart';
 import 'package:thesis_project/screens/splash.dart';
 import 'package:thesis_project/screens/tabs.dart';
@@ -41,7 +42,7 @@ void main() async {
     }
   });
 
-  runApp(const App());
+  runApp(const ProviderScope(child: App()));
 }
 
 class App extends StatefulWidget {

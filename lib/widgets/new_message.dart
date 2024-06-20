@@ -34,17 +34,14 @@ class _NewMessageState extends State<NewMessage> {
 
     final user = FirebaseAuth.instance.currentUser!;
 
-    final userData = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-
-    FirebaseFirestore.instance.collection(widget.discussion).add({
+    FirebaseFirestore.instance
+        .collection('discussions')
+        .doc(widget.discussion)
+        .collection('messages')
+        .add({
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
       'userId': user.uid,
-      'username': userData.data()!['username'],
-      'role': userData.data()!['role'],
     });
   }
 

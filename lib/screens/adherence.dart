@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:thesis_project/models/medication.dart';
+import 'package:thesis_project/models/prescription.dart';
+import 'package:thesis_project/repositories/prescriptions_repository.dart';
 import 'package:thesis_project/widgets/adherence_chart.dart';
 
 class AdherenceScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class AdherenceScreen extends StatefulWidget {
 }
 
 class _AdherenceScreenState extends State<AdherenceScreen> {
-  Medication? selectedMed;
+  Prescription? selectedMed;
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +25,14 @@ class _AdherenceScreenState extends State<AdherenceScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: StreamBuilder<Iterable<Medication>>(
+              child: StreamBuilder<Iterable<Prescription>>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
                     .doc(user.uid)
                     .collection('medications')
                     .snapshots()
                     .map((snapshots) => snapshots.docs
-                        .map((doc) => Medication.fromSnapshot(doc))),
+                        .map((doc) => Prescription.fromSnapshot(doc))),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:thesis_project/models/medication.dart';
+import 'package:thesis_project/models/prescription.dart';
 
 class AdherenceScatterChart extends StatelessWidget {
-  final Medication data;
+  final Prescription data;
 
   const AdherenceScatterChart({super.key, required this.data});
 
