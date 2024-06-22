@@ -1,44 +1,22 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/screens/edit_profile.dart';
+import 'package:thesis_project/repositories/user_repository.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String initUsername = '';
   String initEmail = '';
   String initRole = 'patient';
   String initPatientNr = '';
-
-  @override
-  void initState() {
-    super.initState();
-    setInitUserData();
-  }
-
-  Future<void> setInitUserData() async {
-    final user = FirebaseAuth.instance.currentUser!;
-
-    final userData = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-
-    setState(() {
-      initUsername = userData.data()?['username'] ?? '';
-      initEmail = userData.data()?['email'] ?? '';
-      initPatientNr = userData.data()?['patientNr'] ?? '';
-      initRole = userData.data()?['role'] ?? 'patient';
-    });
-  }
 
   void saveUserData({
     required String username,
@@ -53,12 +31,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'role': role,
       'patientNr': patientNr,
     });
-    setState(() {
-      initUsername = username;
-      initEmail = email;
-      initPatientNr = patientNr;
-      initRole = role;
-    });
+    initUsername = username;
+    initEmail = email;
+    initPatientNr = patientNr;
+    initRole = role;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile updated successfully')),
@@ -67,31 +43,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userAsync = ref.watch(watchUserProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil'),
-      ),
-      body: initUsername.isEmpty
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : Column(
+        appBar: AppBar(
+          title: const Text('Perfil'),
+        ),
+        body: userAsync.when(
+          data: (user) {
+            return Column(
               children: [
                 const Icon(Icons.person_2, size: 64),
                 const SizedBox(height: 8),
                 Text(
-                  initUsername,
+                  user.username,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 24),
                 ),
                 const SizedBox(
                   height: 8,
                 ),
-                Text(initRole),
+                Text(user.role),
                 const SizedBox(
                   height: 8,
                 ),
-                Text('Número de Utente: $initPatientNr'),
+                Text('Número de Utente: ${user.patientNr}'),
                 const SizedBox(
                   height: 16,
                 ),
@@ -103,10 +78,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => EditProfileScreen(
-                            initUsername: initUsername,
-                            initEmail: initEmail,
-                            initPatientNr: initPatientNr,
-                            initRole: initRole,
+                            initUsername: user.username,
+                            initEmail: user.email,
+                            initPatientNr: user.patientNr,
+                            initRole: user.role,
                             saveUserData: saveUserData,
                           ),
                         ),
@@ -124,7 +99,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: const Icon(Icons.logout),
                 )
               ],
-            ),
-    );
+            );
+          },
+          error: (error, stackTrace) => const SizedBox(
+            width: 10,
+          ),
+          loading: () => const CircularProgressIndicator(),
+        ));
   }
 }

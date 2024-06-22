@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/models/prescription.dart';
+import 'package:thesis_project/repositories/prescriptions_repository.dart';
 import 'package:thesis_project/widgets/taken_med.dart';
+import 'package:thesis_project/widgets/warning_frequency_violation.dart';
 
-class MedicationSchedule extends StatefulWidget {
+class MedicationSchedule extends ConsumerWidget {
   const MedicationSchedule({
     super.key,
     required this.date,
@@ -14,15 +17,8 @@ class MedicationSchedule extends StatefulWidget {
   final String medicationId;
   final String date;
 
-  @override
-  State<MedicationSchedule> createState() => _MedicationScheduleState();
-}
-
-class _MedicationScheduleState extends State<MedicationSchedule> {
-  late List<String> schedule;
-  bool changed = false;
-
-  void _initializeScheduleInFirestore(Prescription medication) async {
+  void _setScheduleInFirestore(
+      {required Prescription medication, List<String>? schedule}) async {
     final user = FirebaseAuth.instance.currentUser!;
     final docRef = FirebaseFirestore.instance
         .collection('users')
@@ -30,11 +26,11 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
         .collection('medications')
         .doc(medication.id);
 
-    if (medication.times.isEmpty || changed) {
-      await docRef.set({
-        'times': schedule,
-      }, SetOptions(merge: true));
-    }
+    final scheduleToSet = schedule ?? medication.getSchedule('08h00');
+
+    await docRef.set({
+      'times': scheduleToSet,
+    }, SetOptions(merge: true));
   }
 
   void takenMed(
@@ -99,7 +95,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
     await takenMed.takenMed(
       medicationId: medication.id,
       timesIndex: index,
-      selectedDate: widget.date,
+      selectedDate: date,
       pickedTime: time,
     );
     const snackBar = SnackBar(
@@ -114,60 +110,41 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Future<void> _editSchedule(int index, Prescription medication) async {
+  Future<void> _editSchedule(
+      int index, Prescription medication, BuildContext context) async {
     TimeOfDay? selectedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(DateTime.now()),
     );
 
     if (selectedTime != null) {
-      setState(() {
-        List<String> schedule2 = medication
-            .getSchedule('${selectedTime.hour}h${selectedTime.minute}');
-        for (int i = 0; i < schedule.length - index; i++) {
-          if (index + i < schedule.length) {
-            schedule[i + index] = schedule2[i];
-          }
+      List<String> schedule = medication.times;
+      List<String> afterSchedule =
+          medication.getSchedule('${selectedTime.hour}h${selectedTime.minute}');
+      for (int i = 0; i < schedule.length - index; i++) {
+        if (index + i < schedule.length) {
+          schedule[i + index] = afterSchedule[i];
         }
-        _initializeScheduleInFirestore(medication);
-      });
+      }
+      _setScheduleInFirestore(medication: medication, schedule: schedule);
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
-    final docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('medications')
-        .doc(widget.medicationId);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userPrescriptionAsync =
+        ref.watch(watchUserPrescriptionProvider(medicationId));
+    return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: userPrescriptionAsync.when(
+          data: (prescription) {
+            if (prescription.times.isEmpty) {
+              _setScheduleInFirestore(medication: prescription);
+            }
+            int missingMeds =
+                prescription.nrMedsDay - prescription.getTakenMedsDay(date);
 
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: docRef.snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return const Center(child: Text('Error loading medication data'));
-        } else if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const Center(child: Text('Medication data not found'));
-        } else {
-          final medication = Prescription.fromSnapshot(snapshot.data!);
-
-          if (medication.times.isEmpty) {
-            schedule = medication.getSchedule('8h00');
-            _initializeScheduleInFirestore(medication);
-          } else {
-            schedule = medication.times;
-          }
-
-          int missingMeds =
-              medication.nrMedsDay - medication.getTakenMedsDay(widget.date);
-
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 missingMeds == 0
@@ -175,10 +152,11 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
                     : Text(
                         'Falta-lhe ainda tomar $missingMeds comprimido(s) hoje.'),
                 Column(
-                  children: List.generate(schedule.length, (index) {
-                    final takenMedsForDate =
-                        medication.takenMeds[widget.date] ??
-                            List<String>.filled(medication.nrMedsDay, 'null');
+                  children: List.generate(prescription.times.length, (index) {
+                    //generates an aux list because takenMes may be empty
+
+                    final takenMedsForDate = prescription.takenMeds[date] ??
+                        List<String>.filled(prescription.nrMedsDay, 'null');
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -189,7 +167,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
                               Text(
                                 takenMedsForDate[index] != 'null'
                                     ? takenMedsForDate[index]
-                                    : schedule[index],
+                                    : prescription.times[index],
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(width: 16),
@@ -198,8 +176,11 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
                                       color: Colors.green)
                                   : FilledButton(
                                       onPressed: () {
-                                        takenMed(index, context,
-                                            schedule[index], medication);
+                                        takenMed(
+                                            index,
+                                            context,
+                                            prescription.times[index],
+                                            prescription);
                                       },
                                       child: const Text('Já tomei'),
                                     ),
@@ -207,8 +188,7 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
                               if (takenMedsForDate[index] == 'null')
                                 FilledButton(
                                   onPressed: () {
-                                    changed = true;
-                                    _editSchedule(index, medication);
+                                    _editSchedule(index, prescription, context);
                                   },
                                   child: const Text('Editar horário'),
                                 ),
@@ -218,32 +198,23 @@ class _MedicationScheduleState extends State<MedicationSchedule> {
                           if (index - 1 >= 0 &&
                               takenMedsForDate[index - 1] != 'null' &&
                               takenMedsForDate[index] == 'null' &&
-                              medication.getDifferenceTime(
+                              prescription.getDifferenceTime(
                                       takenMedsForDate[index - 1],
-                                      schedule[index]) <
-                                  medication.frequency)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4.0),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.warning,
-                                      color: Colors.purple),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                      'Perigo! Intervalo menor que ${medication.frequency} horas. Edite o horário.'),
-                                ],
-                              ),
-                            ),
+                                      prescription.times[index]) <
+                                  prescription.frequency)
+                            WarningFrequencyViolation(
+                                prescription: prescription)
                         ],
                       ),
                     );
                   }),
                 ),
               ],
-            ),
-          );
-        }
-      },
-    );
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) =>
+              const Center(child: Text('Error loading medication data')),
+        ));
   }
 }

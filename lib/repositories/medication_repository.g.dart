@@ -23,7 +23,7 @@ final medicationRepositoryProvider =
 );
 
 typedef MedicationRepositoryRef = AutoDisposeProviderRef<MedicationsRepository>;
-String _$fetchMedicationHash() => r'3bbd2fe8ecfaec435add78d67675092926a06d00';
+String _$fetchMedicationHash() => r'5f2c0b281b660fa4fedfd737067bd67b1b2dbb2d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -89,7 +89,7 @@ class FetchMedicationFamily extends Family<AsyncValue<Medication>> {
 }
 
 /// See also [fetchMedication].
-class FetchMedicationProvider extends AutoDisposeFutureProvider<Medication> {
+class FetchMedicationProvider extends AutoDisposeStreamProvider<Medication> {
   /// See also [fetchMedication].
   FetchMedicationProvider(
     String medicationId,
@@ -124,7 +124,7 @@ class FetchMedicationProvider extends AutoDisposeFutureProvider<Medication> {
 
   @override
   Override overrideWith(
-    FutureOr<Medication> Function(FetchMedicationRef provider) create,
+    Stream<Medication> Function(FetchMedicationRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -141,7 +141,7 @@ class FetchMedicationProvider extends AutoDisposeFutureProvider<Medication> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<Medication> createElement() {
+  AutoDisposeStreamProviderElement<Medication> createElement() {
     return _FetchMedicationProviderElement(this);
   }
 
@@ -160,13 +160,13 @@ class FetchMedicationProvider extends AutoDisposeFutureProvider<Medication> {
   }
 }
 
-mixin FetchMedicationRef on AutoDisposeFutureProviderRef<Medication> {
+mixin FetchMedicationRef on AutoDisposeStreamProviderRef<Medication> {
   /// The parameter `medicationId` of this provider.
   String get medicationId;
 }
 
 class _FetchMedicationProviderElement
-    extends AutoDisposeFutureProviderElement<Medication>
+    extends AutoDisposeStreamProviderElement<Medication>
     with FetchMedicationRef {
   _FetchMedicationProviderElement(super.provider);
 

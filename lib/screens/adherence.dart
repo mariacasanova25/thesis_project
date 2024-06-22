@@ -1,45 +1,35 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/models/prescription.dart';
 import 'package:thesis_project/repositories/prescriptions_repository.dart';
 import 'package:thesis_project/widgets/adherence_chart.dart';
 
-class AdherenceScreen extends StatefulWidget {
+class AdherenceScreen extends ConsumerStatefulWidget {
   const AdherenceScreen({super.key});
 
   @override
-  State<AdherenceScreen> createState() => _AdherenceScreenState();
+  ConsumerState<AdherenceScreen> createState() => _AdherenceScreenState();
 }
 
-class _AdherenceScreenState extends State<AdherenceScreen> {
+class _AdherenceScreenState extends ConsumerState<AdherenceScreen> {
   Prescription? selectedMed;
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    final userPrescriptionsAsync = ref.watch(watchUserPrescriptionsProvider);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('A Minha Adesão')),
-      body: Column(
-        children: [
+        appBar: AppBar(title: const Text('A Minha Adesão')),
+        body: Column(children: [
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: StreamBuilder<Iterable<Prescription>>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(user.uid)
-                    .collection('medications')
-                    .snapshots()
-                    .map((snapshots) => snapshots.docs
-                        .map((doc) => Prescription.fromSnapshot(doc))),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                        child: Text('Não foram encontrados medicamentos.'));
-                  }
-                  if (snapshot.hasData) {
-                    var loadedMeds = snapshot.data!.toList();
+              child: userPrescriptionsAsync.when(
+                  data: (loadedMeds) {
+                    if (loadedMeds.isEmpty) {
+                      return const Center(
+                          child: Text('Não foram encontrados medicamentos.'));
+                    }
                     return Center(
                       child: Column(
                         children: [
@@ -82,17 +72,16 @@ class _AdherenceScreenState extends State<AdherenceScreen> {
                         ],
                       ),
                     );
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
-              ),
+                  },
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (error, stackTrace) {
+                    return const SizedBox(
+                      width: 10,
+                    );
+                  }),
             ),
-          ),
-        ],
-      ),
-    );
+          )
+        ]));
   }
 }

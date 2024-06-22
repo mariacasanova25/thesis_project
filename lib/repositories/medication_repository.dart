@@ -9,10 +9,14 @@ class MedicationsRepository {
 
   final FirebaseFirestore firestore;
 
-  Future<Medication> fetchMedication(String medicationId) async {
-    final snapshot =
-        await firestore.collection('medications').doc(medicationId).get();
-    return Medication.fromSnapshot(snapshot);
+  Stream<Medication> fetchMedication(String medicationId) {
+    return firestore
+        .collection('medications')
+        .doc(medicationId)
+        .snapshots()
+        .map(
+          (snapshot) => Medication.fromSnapshot(snapshot),
+        );
   }
 }
 
@@ -22,7 +26,7 @@ MedicationsRepository medicationRepository(MedicationRepositoryRef ref) {
 }
 
 @riverpod
-Future<Medication> fetchMedication(
+Stream<Medication> fetchMedication(
     FetchMedicationRef ref, String medicationId) {
   return ref.watch(medicationRepositoryProvider).fetchMedication(medicationId);
 }
