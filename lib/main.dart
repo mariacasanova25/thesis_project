@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/screens/auth.dart';
 import 'package:thesis_project/screens/splash.dart';
 import 'package:thesis_project/screens/tabs.dart';
-import 'package:thesis_project/widgets/controller.dart';
+import 'package:thesis_project/widgets/notification_controller.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -21,12 +21,13 @@ void main() async {
       [
         NotificationChannel(
           channelGroupKey: 'basic_channel_group',
-          channelKey: 'high_channel',
+          channelKey: 'channel',
           channelName: 'Basic notifications',
           channelDescription: 'Notification channel for basic tests',
           defaultColor: const Color(0xFF9D50DD),
           ledColor: Colors.white,
           importance: NotificationImportance.Max,
+          criticalAlerts: true,
         )
       ],
       channelGroups: [

@@ -1,47 +1,14 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:thesis_project/models/prescription.dart';
 import 'package:thesis_project/repositories/prescriptions_repository.dart';
 import 'package:thesis_project/screens/medication_details.dart';
+import 'package:thesis_project/widgets/create_notification.dart';
 
 class MedicationScreen extends ConsumerWidget {
   const MedicationScreen({super.key, required this.selectedDate});
 
   final DateTime selectedDate;
-
-  void scheduleDailyNotification(
-    BuildContext context,
-    int id,
-    int hour,
-    int minute,
-    Prescription medication,
-  ) async {
-    String selectedDateForm = DateFormat('yyyy-MM-dd').format(selectedDate);
-
-    String localTimeZone =
-        await AwesomeNotifications().getLocalTimeZoneIdentifier();
-
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-          id: id,
-          channelKey: 'high_channel',
-          actionType: ActionType.Default,
-          title: 'Medication Reminder',
-          body: 'Did you take your medication: ${medication.name}?',
-          payload: {
-            'medicationId': medication.id,
-            'selectedDate': selectedDateForm
-          }),
-      schedule: NotificationCalendar(
-          hour: hour,
-          minute: minute,
-          second: 0,
-          repeats: true,
-          timeZone: localTimeZone),
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,6 +61,7 @@ class MedicationScreen extends ConsumerWidget {
 
               //creates notifications
               int notificationId = 0;
+              CreateNotification notification = CreateNotification();
               for (int i = 0; i < med.times.length; i++) {
                 List<String> timeParts = med.times[i].split('h');
                 int hour = int.parse(timeParts[0]);
@@ -102,8 +70,15 @@ class MedicationScreen extends ConsumerWidget {
                 if (med.takenMeds[selectedDateForm] == null ||
                     (med.takenMeds[selectedDateForm] != null &&
                         med.takenMeds[selectedDateForm]![i] == 'null')) {
-                  scheduleDailyNotification(
-                      context, notificationId, hour, minute, med);
+                  notification.createNotification(
+                      context: context,
+                      hour: hour,
+                      minute: minute,
+                      medication: med,
+                      repeats: true,
+                      id: notificationId,
+                      selectedDateForm:
+                          DateFormat('yyyy-MM-dd').format(selectedDate));
                 }
                 notificationId++;
               }

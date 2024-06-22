@@ -1,4 +1,3 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:thesis_project/models/prescription.dart';
@@ -28,7 +27,6 @@ class TakenMed {
           takenMeds[selectedDate] = [];
           for (int i = 0; i < medication.nrMedsDay; i++) {
             takenMeds[selectedDate]!.add('null');
-            print(takenMeds[selectedDate]);
           }
         }
         String time = '';
@@ -51,8 +49,6 @@ class TakenMed {
         // Handle case where document does not exist
         print('Document does not exist.');
       }
-      AwesomeNotifications().cancel(timesIndex);
-      print('REMOVED');
     } catch (e) {
       print('Error updating takenMeds: $e');
     }
