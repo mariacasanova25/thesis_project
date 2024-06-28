@@ -4,10 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:thesis_project/screens/auth.dart';
-import 'package:thesis_project/screens/splash.dart';
-import 'package:thesis_project/screens/tabs.dart';
-import 'package:thesis_project/widgets/notification_controller.dart';
+import 'package:thesis_project/auth.dart';
+import 'package:thesis_project/splash.dart';
+import 'package:thesis_project/tabs.dart';
+import 'package:thesis_project/notifications/notification_controller.dart';
 import 'firebase_options.dart';
 
 void main() async {
