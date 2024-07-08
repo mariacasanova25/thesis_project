@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:thesis_project/profile/profile_info_box.dart';
 
@@ -9,17 +10,20 @@ class EditProfileScreen extends StatefulWidget {
     required this.initRole,
     required this.initUsername,
     required this.saveUserData,
+    required this.initBornDate,
   });
 
   final String initUsername;
   final String initEmail;
   final String initRole;
   final String initPatientNr;
+  final String initBornDate;
   final Function({
     required String username,
     required String email,
     required String role,
     required String patientNr,
+    required String bornDate,
   }) saveUserData;
 
   @override
@@ -33,6 +37,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late String email;
   late String role;
   late String patientNr;
+  late String bornDate;
 
   @override
   void initState() {
@@ -41,6 +46,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     email = widget.initEmail;
     role = widget.initRole;
     patientNr = widget.initPatientNr;
+    bornDate = widget.initBornDate;
   }
 
   @override
@@ -60,19 +66,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 label: 'Nome',
                 initialValue: username,
                 onChanged: (value) => setState(() => username = value!),
+                isTextField: true,
               ),
-              //allow email's changes?
-              /*const SizedBox(height: 16),
-              ProfileInfoBox(
-                label: 'Email',
-                initialValue: email,
-                onChanged: (value) => setState(() => email = value!),
-              ),*/
               const SizedBox(height: 16),
               ProfileInfoBox(
                 label: 'Número Utente',
                 initialValue: patientNr,
                 onChanged: (value) => setState(() => patientNr = value!),
+                isTextField: true,
               ),
               const SizedBox(height: 16),
               ProfileInfoBox(
@@ -80,6 +81,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 initialValue: role,
                 onChanged: (value) => setState(() => role = value ?? role),
                 isDropdown: true,
+              ),
+              const SizedBox(height: 16),
+              ProfileInfoBox(
+                label: 'Data de Nascimento',
+                initialValue: bornDate,
+                onChanged: (value) =>
+                    setState(() => bornDate = value ?? bornDate),
               ),
               const SizedBox(height: 16),
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -94,11 +102,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       widget.saveUserData(
-                        username: username,
-                        email: email,
-                        role: role,
-                        patientNr: patientNr,
-                      );
+                          username: username,
+                          email: email,
+                          role: role,
+                          patientNr: patientNr,
+                          bornDate: bornDate);
                       Navigator.pop(context);
                     }
                   },

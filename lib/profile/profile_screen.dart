@@ -17,12 +17,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String initEmail = '';
   String initRole = 'patient';
   String initPatientNr = '';
+  String initBornDate = '';
 
   void saveUserData({
     required String username,
     required String role,
     required String email,
     required String patientNr,
+    required String bornDate,
   }) async {
     final user = FirebaseAuth.instance.currentUser!;
     await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
@@ -30,6 +32,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       'email': email,
       'role': role,
       'personNr': patientNr,
+      'bornDate': DateTime.parse(bornDate),
     });
     initUsername = username;
     initEmail = email;
@@ -68,6 +71,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 Text('Número de Utente: ${user.patientNr}'),
                 const SizedBox(
+                  height: 8,
+                ),
+                Text('Data de Nascimento: ${user.bornDate}'),
+                const SizedBox(
                   height: 16,
                 ),
                 Align(
@@ -82,6 +89,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             initEmail: user.email,
                             initPatientNr: user.patientNr,
                             initRole: user.role,
+                            initBornDate: user.bornDate,
                             saveUserData: saveUserData,
                           ),
                         ),

@@ -105,6 +105,7 @@ class DiscussionDetailsScreen extends ConsumerWidget {
                               message: discussionMessage.text,
                               isMe:
                                   authenticatedUser.uid == currentMessageUserId,
+                              createdAt: discussionMessage.createdAt,
                             );
                           }
                         }

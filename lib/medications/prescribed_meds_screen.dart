@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:thesis_project/medications/prescribed_meds_day.dart';
 
@@ -17,8 +19,37 @@ class _PrescribedMedsScreenState extends State<PrescribedMedsScreen> {
     for (int i = 1; i <= 5; i++) DateTime.now().add(Duration(days: i)),
   ];
 
+  final List<String> monthAbbreviations = [
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC'
+  ];
+
   @override
   Widget build(BuildContext context) {
+    FirebaseFirestore.instance
+        .collection("medications")
+        .snapshots(includeMetadataChanges: true)
+        .listen((querySnapshot) {
+      for (var change in querySnapshot.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          final source =
+              (querySnapshot.metadata.isFromCache) ? "local cache" : "server";
+          print('DATA ${querySnapshot.docs.first['name']}');
+          print("Data fetched from $source}");
+        }
+      }
+    });
+
     return Column(
       children: [
         //Card(child: Text(_lastMessage)),
@@ -37,7 +68,7 @@ class _PrescribedMedsScreenState extends State<PrescribedMedsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(day.day.toString()),
-                    Text(day.month.toString().toUpperCase()),
+                    Text(monthAbbreviations[day.month - 1]),
                   ],
                 ),
                 selected: selectedDay.day == day.day,

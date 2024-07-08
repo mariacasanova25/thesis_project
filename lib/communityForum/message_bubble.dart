@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 // A MessageBubble for showing a single chat message on the ChatScreen.
 class MessageBubble extends StatelessWidget {
   // Create a message bubble which is meant to be the first in the sequence.
-  const MessageBubble.first({
-    super.key,
-    required this.username,
-    required this.role,
-    required this.message,
-    required this.isMe,
-  }) : isFirstInSequence = true;
+  const MessageBubble.first(
+      {super.key,
+      required this.username,
+      required this.role,
+      required this.message,
+      required this.isMe,
+      required this.createdAt})
+      : isFirstInSequence = true;
 
   // Create a amessage bubble that continues the sequence.
   const MessageBubble.next({
@@ -18,7 +20,8 @@ class MessageBubble extends StatelessWidget {
     required this.isMe,
   })  : isFirstInSequence = false,
         username = null,
-        role = null;
+        role = null,
+        createdAt = null;
 
   // Whether or not this message bubble is the first in a sequence of messages
   // from the same user.
@@ -34,6 +37,7 @@ class MessageBubble extends StatelessWidget {
   final String? username;
   final String message;
   final String? role;
+  final DateTime? createdAt;
 
   // Controls how the MessageBubble will be aligned.
   final bool isMe;
@@ -41,6 +45,15 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    var hour;
+    var minutes;
+    if (createdAt != null) {
+      hour =
+          createdAt!.hour < 10 ? '0${createdAt!.hour}' : '${createdAt!.hour}';
+      minutes = createdAt!.minute < 10
+          ? '0${createdAt!.minute}'
+          : '${createdAt!.minute}';
+    }
 
     return Stack(
       children: [
@@ -85,6 +98,22 @@ class MessageBubble extends StatelessWidget {
                       ),
                       child: Text(
                         role!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 12,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+
+                  if (createdAt != null)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 13,
+                        right: 13,
+                      ),
+                      child: Text(
+                        '${DateFormat('yyyy-MM-dd').format(createdAt!)} $hour:$minutes',
                         style: const TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 12,
