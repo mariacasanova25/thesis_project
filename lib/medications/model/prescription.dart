@@ -2,18 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class Prescription {
-  Prescription({
-    required this.name,
-    required this.dosage,
-    required this.endDate,
-    required this.frequency,
-    required this.startDate,
-    required this.times,
-    required this.takenMeds,
-    required this.id,
-    required this.physicianId,
-    required this.motive,
-  });
+  Prescription(
+      {required this.name,
+      required this.dosage,
+      required this.endDate,
+      required this.frequency,
+      required this.startDate,
+      required this.times,
+      required this.takenMeds,
+      required this.id,
+      required this.physicianId,
+      required this.motive,
+      required this.medicationId});
 
   final String name;
   final String id;
@@ -23,6 +23,7 @@ class Prescription {
   final int frequency;
   final String motive;
   final String physicianId;
+  final String medicationId;
   final List<String> times;
   final Map<String, List<String>> takenMeds;
 
@@ -48,6 +49,7 @@ class Prescription {
       times: times,
       motive: data['motive'],
       physicianId: data['physicianId'],
+      medicationId: data['medicationId'],
       takenMeds: takenMeds,
       id: snapshot.id,
     );

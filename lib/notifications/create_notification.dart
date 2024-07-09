@@ -8,7 +8,7 @@ class CreateNotification {
       required int id,
       required int hour,
       required int minute,
-      required Prescription medication,
+      required Prescription prescription,
       required String selectedDateForm,
       required bool repeats}) async {
     String localTimeZone =
@@ -19,12 +19,12 @@ class CreateNotification {
           id: id,
           channelKey: 'channel',
           actionType: ActionType.Default,
-          title: 'Hora de tomar ${medication.name}',
-          body: 'Ingira ${medication.dosage} dose(s) de ${medication.name}',
+          title: 'Hora de tomar ${prescription.name}',
+          body: 'Ingira ${prescription.dosage} dose(s) de ${prescription.name}',
           category: NotificationCategory.Alarm,
           criticalAlert: true,
           payload: {
-            'medicationId': medication.id,
+            'medicationId': prescription.medicationId,
             'selectedDate': selectedDateForm
           }),
       schedule: NotificationCalendar(

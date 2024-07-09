@@ -17,12 +17,12 @@ class PrescribedMedsDay extends ConsumerWidget {
     final userPrescriptionsAsync = ref.watch(watchUserPrescriptionsProvider);
     return Expanded(
         child: userPrescriptionsAsync.when(
-      data: (loadedMeds) {
-        if (loadedMeds.isEmpty) {
+      data: (prescriptions) {
+        if (prescriptions.isEmpty) {
           return const Center(
               child: Text('Não foram encontrados medicamentos.'));
         }
-        final filteredMeds = loadedMeds.where((medication) {
+        final currentPrescriptions = prescriptions.where((medication) {
           var endDate = DateTime(medication.endDate.year,
               medication.endDate.month, medication.endDate.day);
           var startDate = DateTime(medication.startDate.year,
@@ -34,23 +34,24 @@ class PrescribedMedsDay extends ConsumerWidget {
                   startDate.isAtSameMomentAs(selectedDate));
         }).toList();
 
-        if (filteredMeds.isEmpty) {
+        if (currentPrescriptions.isEmpty) {
           return const Center(
             child: Text('Não tem medicamentos para tomar'),
           );
         }
         return ListView.builder(
-            itemCount: filteredMeds.length,
+            itemCount: currentPrescriptions.length,
             itemBuilder: (context, index) {
-              final med = filteredMeds[index];
+              final prescription = currentPrescriptions[index];
               var currentDate = DateTime.now();
-              var daysLeft = med.endDate.difference(currentDate).inDays;
+              var daysLeft =
+                  prescription.endDate.difference(currentDate).inDays;
 
               //calculate the number of already taken meds
               String selectedDateForm =
                   DateFormat('yyyy-MM-dd').format(selectedDate);
               int takenMeds = 0;
-              var help = med.takenMeds[selectedDateForm];
+              var help = prescription.takenMeds[selectedDateForm];
               if (help != null) {
                 for (int i = 0; i < help.length; i++) {
                   if (help[i] != 'null') {
@@ -62,19 +63,20 @@ class PrescribedMedsDay extends ConsumerWidget {
               //creates notifications
               int notificationId = 0;
               CreateNotification notification = CreateNotification();
-              for (int i = 0; i < med.times.length; i++) {
-                List<String> timeParts = med.times[i].split('h');
+              for (int i = 0; i < prescription.times.length; i++) {
+                List<String> timeParts = prescription.times[i].split('h');
                 int hour = int.parse(timeParts[0]);
                 int minute = int.parse(timeParts[1]);
 
-                if (med.takenMeds[selectedDateForm] == null ||
-                    (med.takenMeds[selectedDateForm] != null &&
-                        med.takenMeds[selectedDateForm]![i] == 'null')) {
+                if (prescription.takenMeds[selectedDateForm] == null ||
+                    (prescription.takenMeds[selectedDateForm] != null &&
+                        prescription.takenMeds[selectedDateForm]![i] ==
+                            'null')) {
                   notification.createNotification(
                       context: context,
                       hour: hour,
                       minute: minute,
-                      medication: med,
+                      prescription: prescription,
                       repeats: true,
                       id: notificationId,
                       selectedDateForm:
@@ -85,14 +87,14 @@ class PrescribedMedsDay extends ConsumerWidget {
 
               return ListTile(
                 title: Text(
-                  med.name,
+                  prescription.name,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Dose: ${med.dosage}'),
+                    Text('Dose: ${prescription.dosage}'),
                     Text('Termina em: $daysLeft dias.'),
                     const SizedBox(height: 8),
                   ],
@@ -100,7 +102,7 @@ class PrescribedMedsDay extends ConsumerWidget {
                 leading: CircularProgressIndicator(
                   backgroundColor:
                       Theme.of(context).colorScheme.primaryContainer,
-                  value: takenMeds / med.nrMedsDay,
+                  value: takenMeds / prescription.nrMedsDay,
                 ),
                 trailing: const Icon(
                   Icons.arrow_forward_ios,
@@ -111,9 +113,9 @@ class PrescribedMedsDay extends ConsumerWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => MedicationDetailsScreen(
-                        medicationId: med.id,
+                        medicationId: prescription.medicationId,
                         selectedDate: selectedDate,
-                        medicationName: med.name,
+                        medicationName: prescription.name,
                       ),
                     ),
                   );

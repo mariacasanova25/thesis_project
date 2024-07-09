@@ -32,11 +32,6 @@ class _NewMessageState extends State<NewDiscussion> {
 
     final user = FirebaseAuth.instance.currentUser!;
 
-    final userData = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-
     FirebaseFirestore.instance.collection('discussions').add({
       'name': enteredText,
       'createdAt': Timestamp.now(),
