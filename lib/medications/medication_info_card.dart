@@ -13,6 +13,12 @@ class MedicationInfoCard extends StatelessWidget {
       SizedBox(
         width: 300,
         child: Card(
+          margin: const EdgeInsets.all(6),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          color: Theme.of(context).colorScheme.secondary,
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(

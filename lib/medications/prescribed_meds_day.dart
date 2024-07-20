@@ -15,8 +15,7 @@ class PrescribedMedsDay extends ConsumerWidget {
     //ref.listen(watchUserPrescriptionsProvider,
     //  (_, prescriptions) => scheduleDailyNotification(prescriptions));
     final userPrescriptionsAsync = ref.watch(watchUserPrescriptionsProvider);
-    return Expanded(
-        child: userPrescriptionsAsync.when(
+    return userPrescriptionsAsync.when(
       data: (prescriptions) {
         if (prescriptions.isEmpty) {
           return const Center(
@@ -36,16 +35,20 @@ class PrescribedMedsDay extends ConsumerWidget {
 
         if (currentPrescriptions.isEmpty) {
           return const Center(
-            child: Text('Não tem medicamentos para tomar'),
+            child: Text('Não tem medicamentos para tomar.'),
           );
         }
         return ListView.builder(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 6,
+            ),
             itemCount: currentPrescriptions.length,
             itemBuilder: (context, index) {
               final prescription = currentPrescriptions[index];
-              var currentDate = DateTime.now();
+
               var daysLeft =
-                  prescription.endDate.difference(currentDate).inDays;
+                  prescription.endDate.difference(selectedDate).inDays;
 
               //calculate the number of already taken meds
               String selectedDateForm =
@@ -85,41 +88,51 @@ class PrescribedMedsDay extends ConsumerWidget {
                 notificationId++;
               }
 
-              return ListTile(
-                title: Text(
-                  prescription.name,
-                  style: Theme.of(context).textTheme.titleLarge,
+              return Card(
+                margin: const EdgeInsets.all(6),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
                 ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Dose: ${prescription.dosage}'),
-                    Text('Termina em: $daysLeft dias.'),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-                leading: CircularProgressIndicator(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer,
-                  value: takenMeds / prescription.nrMedsDay,
-                ),
-                trailing: const Icon(
-                  Icons.arrow_forward_ios,
-                  size: 18,
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MedicationDetailsScreen(
-                        medicationId: prescription.medicationId,
-                        selectedDate: selectedDate,
-                        medicationName: prescription.name,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
+                  leading: Image.asset('assets/images/pills.png'),
+                  title: Text(
+                    prescription.name,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${prescription.dosage} Comprimido(s)'),
+                      daysLeft == 0
+                          ? const Text('Termina hoje.')
+                          : Text('Termina em: $daysLeft dia(s).'),
+                      const SizedBox(height: 8),
+                      // takenMeds / prescription.nrMedsDay,
+                    ],
+                  ),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 18,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MedicationDetailsScreen(
+                          medicationId: prescription.medicationId,
+                          selectedDate: selectedDate,
+                          medicationName: prescription.name,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             });
       },
@@ -129,6 +142,6 @@ class PrescribedMedsDay extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-    ));
+    );
   }
 }

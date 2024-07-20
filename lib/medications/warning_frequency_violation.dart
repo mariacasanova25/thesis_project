@@ -11,7 +11,7 @@ class WarningFrequencyViolation extends StatelessWidget {
       padding: const EdgeInsets.only(top: 4.0),
       child: Row(
         children: [
-          const Icon(Icons.warning, color: Colors.purple),
+          Icon(Icons.warning, color: Theme.of(context).colorScheme.onSurface),
           const SizedBox(width: 4),
           Text(
               'Perigo! Intervalo menor que ${prescription.frequency} horas. Edite o horário.'),

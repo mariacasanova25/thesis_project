@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:thesis_project/auth.dart';
+import 'package:thesis_project/auth_screen.dart';
 import 'package:thesis_project/splash.dart';
 import 'package:thesis_project/tabs.dart';
 import 'package:thesis_project/notifications/notification_controller.dart';
@@ -72,10 +72,19 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FlutterChat',
-      theme: ThemeData().copyWith(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 138, 99, 235),
+      theme: ThemeData(
+        colorScheme: const ColorScheme(
+          brightness: Brightness.light,
+          primary: Color(0xFF007AFF),
+          onPrimary: Colors.white,
+          secondary: Color(0xFFDEDCFF),
+          onSecondary: Colors.black,
+          error: Color(0xFFff3a30),
+          onError: Colors.white,
+          surface: Colors.white,
+          onSurface: Colors.black,
         ),
+        scaffoldBackgroundColor: const Color(0xFFf1f3f2),
       ),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),

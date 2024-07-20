@@ -13,7 +13,7 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   final pageController = PageController();
-  int currentPage = 0;
+  late int currentPage = pageController.initialPage;
 
   void selectPage(int index) {
     pageController.animateToPage(
@@ -43,13 +43,14 @@ class _TabsScreenState extends State<TabsScreen> {
         title: Text(activePageTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_2_outlined),
+            icon: const Icon(Icons.account_circle),
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfileScreen(),
+                ),
+              );
             },
           )
         ],
@@ -64,15 +65,20 @@ class _TabsScreenState extends State<TabsScreen> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0,
+        showSelectedLabels: true,
+        showUnselectedLabels: false,
         onTap: selectPage,
         currentIndex: currentPage,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.medication_outlined),
+            // icon: Icon(Icons.medication_outlined),
+            icon: Icon(Icons.medication),
             label: 'Medicamentos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline),
+            // icon: Icon(Icons.people_outline),
+            icon: Icon(Icons.people),
             label: 'Fórum',
           ),
           BottomNavigationBarItem(

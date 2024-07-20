@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Add this import for date formatting
 
 class ProfileInfoBox extends StatefulWidget {
   final String label;
@@ -23,6 +24,15 @@ class ProfileInfoBox extends StatefulWidget {
 class _ProfileInfoBoxState extends State<ProfileInfoBox> {
   DateTime? _selectedDate;
 
+  @override
+  void initState() {
+    super.initState();
+    // Initialize _selectedDate if initialValue is a valid date string
+    if (widget.initialValue.isNotEmpty) {
+      _selectedDate = DateTime.tryParse(widget.initialValue);
+    }
+  }
+
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -34,7 +44,7 @@ class _ProfileInfoBoxState extends State<ProfileInfoBox> {
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
-        widget.onChanged(_selectedDate.toString());
+        widget.onChanged(_selectedDate!.toIso8601String());
       });
     }
   }
@@ -45,7 +55,7 @@ class _ProfileInfoBoxState extends State<ProfileInfoBox> {
       width: double.infinity,
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: Colors.purple.shade50,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(4.0),
       ),
       child: Column(
@@ -54,9 +64,8 @@ class _ProfileInfoBoxState extends State<ProfileInfoBox> {
           Text(
             widget.label,
             style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.purple),
+              fontSize: 16,
+            ),
           ),
           const SizedBox(height: 8),
           if (widget.isDropdown)
@@ -93,15 +102,14 @@ class _ProfileInfoBoxState extends State<ProfileInfoBox> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.purple),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.onSurface),
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 child: Text(
                   _selectedDate == null
                       ? 'Selecionar data'
-                      : 'Data de nascimento: ${_selectedDate!.toLocal()}'
-                          .split(' ')[0],
-                  style: const TextStyle(color: Colors.purple),
+                      : ' ${DateFormat('dd/MM/yyyy').format(_selectedDate!)}',
                 ),
               ),
             ),

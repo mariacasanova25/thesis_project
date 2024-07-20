@@ -148,64 +148,81 @@ class MedicationSchedule extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 missingMeds == 0
-                    ? const Text('Já tomou este medicamento hoje.')
-                    : Text(
-                        'Falta-lhe ainda tomar $missingMeds comprimido(s) hoje.'),
+                    ? const Center(
+                        child: Text('Já tomou este medicamento neste dia.'))
+                    : Center(
+                        child: Text(missingMeds == 1
+                            ? 'Falta-lhe ainda tomar 1 comprimido neste dia.'
+                            : 'Faltam-lhe ainda tomar $missingMeds comprimidos neste dia.'),
+                      ),
                 Column(
                   children: List.generate(prescription.times.length, (index) {
                     //generates an aux list because takenMes may be empty
 
                     final takenMedsForDate = prescription.takenMeds[date] ??
                         List<String>.filled(prescription.nrMedsDay, 'null');
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                takenMedsForDate[index] != 'null'
-                                    ? takenMedsForDate[index]
-                                    : prescription.times[index],
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(width: 16),
-                              takenMedsForDate[index] != 'null'
-                                  ? const Icon(Icons.check_circle,
-                                      color: Colors.green)
-                                  : FilledButton(
-                                      onPressed: () {
-                                        takenMed(
-                                            index,
-                                            context,
-                                            prescription.times[index],
-                                            prescription);
-                                      },
-                                      child: const Text('Já tomei'),
-                                    ),
-                              const SizedBox(width: 16),
-                              if (takenMedsForDate[index] == 'null')
-                                FilledButton(
-                                  onPressed: () {
-                                    _editSchedule(index, prescription, context);
-                                  },
-                                  child: const Text('Editar horário'),
-                                ),
-                              const SizedBox(width: 16),
-                            ],
+                    final theme = Theme.of(context);
+                    return Column(
+                      children: [
+                        Card(
+                          margin: const EdgeInsets.all(6),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
                           ),
-                          if (index - 1 >= 0 &&
-                              takenMedsForDate[index - 1] != 'null' &&
-                              takenMedsForDate[index] == 'null' &&
-                              prescription.getDifferenceTime(
-                                      takenMedsForDate[index - 1],
-                                      prescription.times[index]) <
-                                  prescription.frequency)
-                            WarningFrequencyViolation(
-                                prescription: prescription)
-                        ],
-                      ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
+                            title: takenMedsForDate[index] != 'null'
+                                ? Text(takenMedsForDate[index],
+                                    style: theme.textTheme.headlineLarge!)
+                                : Row(
+                                    children: [
+                                      Text(prescription.times[index],
+                                          style:
+                                              theme.textTheme.headlineLarge!),
+                                      const SizedBox(width: 4),
+                                      const Icon(
+                                        Icons.edit,
+                                        size: 20,
+                                        color: Colors.black,
+                                      )
+                                    ],
+                                  ),
+                            trailing: takenMedsForDate[index] != 'null'
+                                ? const Icon(
+                                    Icons.check,
+                                    color: Colors.green,
+                                    size: 32,
+                                  )
+                                : FilledButton(
+                                    onPressed: () {
+                                      takenMed(
+                                          index,
+                                          context,
+                                          prescription.times[index],
+                                          prescription);
+                                    },
+                                    child: const Text('Já tomei'),
+                                  ),
+                            onTap: () {
+                              if (takenMedsForDate[index] == 'null') {
+                                _editSchedule(index, prescription, context);
+                              }
+                            },
+                          ),
+                        ),
+                        if (index - 1 >= 0 &&
+                            takenMedsForDate[index - 1] != 'null' &&
+                            takenMedsForDate[index] == 'null' &&
+                            prescription.getDifferenceTime(
+                                    takenMedsForDate[index - 1],
+                                    prescription.times[index]) <
+                                prescription.frequency)
+                          WarningFrequencyViolation(prescription: prescription)
+                      ],
                     );
                   }),
                 ),

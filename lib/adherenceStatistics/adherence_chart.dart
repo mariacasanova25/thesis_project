@@ -15,10 +15,10 @@ class AdherenceScatterChart extends StatelessWidget {
     while (date.isBefore(DateTime.now())) {
       date = date.add(const Duration(days: 1));
       date = DateTime(date.year, date.month, date.day);
-      if (date.isAtSameMomentAs(DateTime(
+      if ((date.isAtSameMomentAs(DateTime(
               DateTime.now().year, DateTime.now().month, DateTime.now().day)) ||
           date.isBefore(DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day))) {
+              DateTime.now().year, DateTime.now().month, DateTime.now().day))) && date.isBefore(data.endDate)) {
         days.add(date);
       }
     }

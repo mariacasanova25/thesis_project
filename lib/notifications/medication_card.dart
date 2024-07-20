@@ -77,8 +77,7 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
                         ? Image.network(imageUrl)
                         : const CircularProgressIndicator(),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  Wrap(
                     children: [
                       ElevatedButton(
                         onPressed: () {
