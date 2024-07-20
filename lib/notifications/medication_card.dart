@@ -106,7 +106,7 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           Navigator.pop(context);
                         },
-                        child: const Text('Sim'),
+                        child: const Text('Já tomei'),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
@@ -135,7 +135,7 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
                               repeats: false);
                           Navigator.pop(context);
                         },
-                        child: const Text('Adiar'),
+                        child: const Text('Adiar 15min'),
                       )
                     ],
                   ),
