@@ -29,7 +29,6 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
   late String imageUrl = '';
   Future<void> downloadImage() async {
     try {
-      print(widget.medicationId);
       final ref =
           FirebaseStorage.instance.ref().child('${widget.medicationId}.png');
       final url = await ref.getDownloadURL();
@@ -65,6 +64,11 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
                     'Hora de tomar ${prescription.name}.',
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    prescription.times[widget.timesIndex],
+                    style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 16),
                   Text(

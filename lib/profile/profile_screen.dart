@@ -82,24 +82,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
+                const Center(
                   child: Column(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 44,
                         child: Icon(Icons.account_circle, size: 88),
                       ),
-                      const SizedBox(height: 16),
-                      Text(user.username, style: textTheme.headlineLarge),
-                      Text(user.role, style: textTheme.headlineSmall),
+                      SizedBox(height: 16),
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
-                _buildProfileInfo(
-                    'Número de Utente', user.patientNr, textTheme),
-                _buildProfileInfo(
-                    'Data de Nascimento', user.bornDate, textTheme),
+                const SizedBox(height: 16),
+                Text('Nome', style: textTheme.headlineSmall),
+                Text(user.username, style: textTheme.headlineLarge),
+                const SizedBox(height: 16),
+                Text('Função', style: textTheme.headlineSmall),
+                Text(user.role, style: textTheme.headlineLarge),
+                const SizedBox(height: 16),
+                Text('Número de Utente', style: textTheme.headlineSmall),
+                Text(user.patientNr, style: textTheme.headlineLarge),
+                const SizedBox(height: 16),
+                Text('Data de Nascimento', style: textTheme.headlineSmall),
+                Text(user.bornDate, style: textTheme.headlineLarge),
                 const SizedBox(height: 32),
                 Center(
                   child: FilledButton.icon(
@@ -135,7 +140,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$label: ', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
           Expanded(child: Text(value)),
         ],
       ),

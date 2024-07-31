@@ -4,7 +4,6 @@ import 'package:thesis_project/communityForum/NewDiscussionButton.dart';
 import 'package:thesis_project/communityForum/data/discussions_repository.dart';
 import 'package:thesis_project/communityForum/discussions_list.dart';
 import 'package:thesis_project/communityForum/model/discussion.dart';
-import 'package:thesis_project/communityForum/new_discussion.dart';
 
 class CommunityForumScreen extends ConsumerStatefulWidget {
   const CommunityForumScreen({super.key});
