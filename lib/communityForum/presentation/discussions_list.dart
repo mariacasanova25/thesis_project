@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:thesis_project/communityForum/model/discussion.dart';
-import 'package:thesis_project/communityForum/discussion_details.dart';
+import 'package:thesis_project/communityForum/domain/discussion.dart';
+import 'package:thesis_project/communityForum/presentation/discussion_details.dart';
 
 class DiscussionsList extends StatelessWidget {
   const DiscussionsList({super.key, required this.discussions});

@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:thesis_project/medications/model/prescription.dart';
+import 'package:thesis_project/medications/domain/prescription.dart';
 import 'package:thesis_project/medications/data/prescriptions_repository.dart';
-import 'package:thesis_project/medications/taken_med.dart';
-import 'package:thesis_project/medications/warning_frequency_violation.dart';
+import 'package:thesis_project/medications/presentation/taken_med.dart';
+import 'package:thesis_project/medications/presentation/warning_frequency_violation.dart';
 
 class MedicationSchedule extends ConsumerWidget {
   const MedicationSchedule({

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:thesis_project/notifications/medication_card.dart';
+import 'package:thesis_project/notifications/presentation/medication_card.dart';
 
 class NotificationController {
   static late BuildContext appContext;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:thesis_project/communityForum/community_forum.dart';
+import 'package:thesis_project/communityForum/presentation/community_forum.dart';
 import 'package:thesis_project/medications/data/medication_repository.dart';
-import 'package:thesis_project/medications/medication_info_card.dart';
-import 'package:thesis_project/medications/medication_schedule.dart';
+import 'package:thesis_project/medications/presentation/medication_info_card.dart';
+import 'package:thesis_project/medications/presentation/medication_schedule.dart';
 
 class MedicationDetailsScreen extends ConsumerWidget {
   const MedicationDetailsScreen({

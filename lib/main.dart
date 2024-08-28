@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/auth_screen.dart';
 import 'package:thesis_project/splash.dart';
 import 'package:thesis_project/tabs.dart';
-import 'package:thesis_project/notifications/notification_controller.dart';
+import 'package:thesis_project/notifications/presentation/notification_controller.dart';
 import 'firebase_options.dart';
 
 void main() async {

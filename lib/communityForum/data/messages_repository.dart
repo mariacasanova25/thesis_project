@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:thesis_project/communityForum/model/message.dart';
+import 'package:thesis_project/communityForum/domain/message.dart';
 
 part 'messages_repository.g.dart';
 

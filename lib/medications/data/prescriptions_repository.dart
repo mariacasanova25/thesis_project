@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:thesis_project/medications/model/prescription.dart';
+import 'package:thesis_project/medications/domain/prescription.dart';
 
 part 'prescriptions_repository.g.dart';
 

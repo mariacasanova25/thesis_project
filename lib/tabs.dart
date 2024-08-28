@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:thesis_project/adherenceStatistics/adherence_screen.dart';
-import 'package:thesis_project/medications/prescribed_meds_screen.dart';
-import 'package:thesis_project/communityForum/community_forum.dart';
-import 'package:thesis_project/profile/profile_screen.dart';
+import 'package:thesis_project/medications/presentation/prescribed_meds_screen.dart';
+import 'package:thesis_project/communityForum/presentation/community_forum.dart';
+import 'package:thesis_project/profile/presentation/profile_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});

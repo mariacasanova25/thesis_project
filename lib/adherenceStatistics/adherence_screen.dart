@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:thesis_project/medications/model/prescription.dart';
+import 'package:thesis_project/medications/domain/prescription.dart';
 import 'package:thesis_project/medications/data/prescriptions_repository.dart';
 import 'package:thesis_project/adherenceStatistics/adherence_chart.dart';
 

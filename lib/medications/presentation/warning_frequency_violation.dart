@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thesis_project/medications/model/prescription.dart';
+import 'package:thesis_project/medications/domain/prescription.dart';
 
 class WarningFrequencyViolation extends StatelessWidget {
   const WarningFrequencyViolation({super.key, required this.prescription});

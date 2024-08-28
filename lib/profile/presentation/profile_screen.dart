@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:thesis_project/profile/edit_profile_screen.dart';
+import 'package:thesis_project/profile/presentation/edit_profile_screen.dart';
 import 'package:thesis_project/profile/data/user_repository.dart';
-import 'package:thesis_project/profile/model/user.dart';
+import 'package:thesis_project/profile/domain/user.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thesis_project/profile/profile_info_box.dart';
+import 'package:thesis_project/profile/presentation/profile_info_box.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({

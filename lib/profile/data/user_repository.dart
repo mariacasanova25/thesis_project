@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:thesis_project/profile/model/user.dart';
+import 'package:thesis_project/profile/domain/user.dart';
 
 part 'user_repository.g.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:thesis_project/medications/model/prescription.dart';
+import 'package:thesis_project/medications/domain/prescription.dart';
 
 class AdherenceScatterChart extends StatelessWidget {
   final Prescription data;
@@ -15,10 +15,11 @@ class AdherenceScatterChart extends StatelessWidget {
     while (date.isBefore(DateTime.now())) {
       date = date.add(const Duration(days: 1));
       date = DateTime(date.year, date.month, date.day);
-      if ((date.isAtSameMomentAs(DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day)) ||
-          date.isBefore(DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day))) && date.isBefore(data.endDate)) {
+      if ((date.isAtSameMomentAs(DateTime(DateTime.now().year,
+                  DateTime.now().month, DateTime.now().day)) ||
+              date.isBefore(DateTime(DateTime.now().year, DateTime.now().month,
+                  DateTime.now().day))) &&
+          date.isBefore(data.endDate)) {
         days.add(date);
       }
     }

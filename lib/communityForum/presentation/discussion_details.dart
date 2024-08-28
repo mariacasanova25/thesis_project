@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:thesis_project/communityForum/message_bubble.dart';
-import 'package:thesis_project/communityForum/new_message.dart';
+import 'package:thesis_project/communityForum/presentation/message_bubble.dart';
+import 'package:thesis_project/communityForum/presentation/new_message.dart';
 import 'package:thesis_project/communityForum/data/messages_repository.dart';
 
 class DiscussionDetailsScreen extends ConsumerWidget {

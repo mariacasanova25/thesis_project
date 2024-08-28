@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:thesis_project/medications/data/prescriptions_repository.dart';
-import 'package:thesis_project/medications/medication_details.dart';
-import 'package:thesis_project/notifications/create_notification.dart';
+import 'package:thesis_project/medications/presentation/medication_details.dart';
+import 'package:thesis_project/notifications/presentation/create_notification.dart';
 
 class PrescribedMedsDay extends ConsumerWidget {
   const PrescribedMedsDay({super.key, required this.selectedDate});
