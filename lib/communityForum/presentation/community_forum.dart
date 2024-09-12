@@ -20,21 +20,18 @@ class _CommunityForumScreenState extends ConsumerState<CommunityForumScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   void _filterDiscussions(String query) {
-    if (query.isEmpty) {
-      setState(() {
+    setState(() {
+      if (query.isEmpty) {
         _filteredDiscussions = _allDiscussions;
-      });
-    } else {
-      setState(() {
+      } else {
         _filteredDiscussions = _allDiscussions.where((discussion) {
           final queryLower = query.toLowerCase();
           final nameMatches =
               discussion.name.toLowerCase().contains(queryLower);
-
           return nameMatches;
         }).toList();
-      });
-    }
+      }
+    });
   }
 
   @override
@@ -45,7 +42,7 @@ class _CommunityForumScreenState extends ConsumerState<CommunityForumScreen> {
         title: _isSearchBarVisible
             ? TextField(
                 controller: _searchController,
-                onChanged: (query) => _filterDiscussions(query),
+                onChanged: _filterDiscussions,
                 decoration: InputDecoration(
                   hintText: 'Pesquisar...',
                   border: OutlineInputBorder(
@@ -81,11 +78,14 @@ class _CommunityForumScreenState extends ConsumerState<CommunityForumScreen> {
       ),
       body: discussionsAsync.when(
         data: (discussions) {
-          // Update the discussions list and reset filtered discussions when new data is available
-          setState(() {
-            _allDiscussions = discussions;
-            _filteredDiscussions = discussions;
-          });
+          _allDiscussions = discussions;
+
+          // Reapply search filter if there's an active query
+          if (_searchController.text.isNotEmpty) {
+            _filterDiscussions(_searchController.text);
+          } else {
+            _filteredDiscussions = _allDiscussions;
+          }
 
           if (_filteredDiscussions.isEmpty) {
             return const Center(
