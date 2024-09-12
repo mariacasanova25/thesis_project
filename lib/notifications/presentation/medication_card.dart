@@ -2,8 +2,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/medications/data/prescriptions_repository.dart';
-import 'package:thesis_project/notifications/presentation/create_notification.dart';
 import 'package:thesis_project/medications/presentation/taken_med.dart';
+import 'package:thesis_project/notifications/presentation/create_notification.dart';
 
 class MedicationCard extends ConsumerStatefulWidget {
   const MedicationCard({
@@ -95,7 +95,7 @@ class _MedicationCardState extends ConsumerState<MedicationCard> {
                         onPressed: () {
                           TakenMed takenMed = TakenMed();
                           takenMed.takenMed(
-                              medicationId: widget.medicationId,
+                              prescriptionId: widget.medicationId,
                               selectedDate: widget.selectedDate,
                               timesIndex: widget.timesIndex);
                           const snackBar = SnackBar(

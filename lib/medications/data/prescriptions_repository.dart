@@ -15,7 +15,7 @@ class PrescriptionsRepository {
     return firestore
         .collection('users')
         .doc(userId)
-        .collection('medications')
+        .collection('prescriptions')
         .snapshots()
         .map((snapshots) => snapshots.docs
             .map((doc) => Prescription.fromSnapshot(doc))
@@ -27,7 +27,7 @@ class PrescriptionsRepository {
     return firestore
         .collection('users')
         .doc(userId)
-        .collection('medications')
+        .collection('prescriptions')
         .doc(medicationId)
         .snapshots()
         .map((snapshot) => Prescription.fromSnapshot(snapshot));

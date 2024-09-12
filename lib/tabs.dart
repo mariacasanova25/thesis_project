@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thesis_project/adherenceStatistics/adherence_screen.dart';
-import 'package:thesis_project/medications/presentation/prescribed_meds_screen.dart';
 import 'package:thesis_project/communityForum/presentation/community_forum.dart';
+import 'package:thesis_project/medications/presentation/prescribed_meds_screen.dart';
 import 'package:thesis_project/profile/presentation/profile_screen.dart';
 
 class TabsScreen extends StatefulWidget {
@@ -12,7 +12,7 @@ class TabsScreen extends StatefulWidget {
 }
 
 class _TabsScreenState extends State<TabsScreen> {
-  final pageController = PageController();
+  final pageController = PageController(initialPage: 1);
   late int currentPage = pageController.initialPage;
 
   void selectPage(int index) {
@@ -24,9 +24,9 @@ class _TabsScreenState extends State<TabsScreen> {
   }
 
   String get activePageTitle => switch (currentPage) {
-        0 => 'Os Meus Medicamentos',
-        1 => 'Fórum Comunitário',
-        2 => 'Adesão',
+        0 => 'Fórum Comunitário',
+        1 => 'Os Meus Medicamentos',
+        2 => 'A Minha Adesão',
         _ => '',
       };
 
@@ -59,8 +59,8 @@ class _TabsScreenState extends State<TabsScreen> {
         controller: pageController,
         onPageChanged: (page) => setState(() => currentPage = page),
         children: const [
-          PrescribedMedsScreen(),
           CommunityForumScreen(),
+          PrescribedMedsScreen(),
           AdherenceScreen(),
         ],
       ),
@@ -72,14 +72,14 @@ class _TabsScreenState extends State<TabsScreen> {
         currentIndex: currentPage,
         items: const [
           BottomNavigationBarItem(
-            // icon: Icon(Icons.medication_outlined),
-            icon: Icon(Icons.medication),
-            label: 'Medicamentos',
-          ),
-          BottomNavigationBarItem(
             // icon: Icon(Icons.people_outline),
             icon: Icon(Icons.people),
             label: 'Fórum',
+          ),
+          BottomNavigationBarItem(
+            // icon: Icon(Icons.medication_outlined),
+            icon: Icon(Icons.medication),
+            label: 'Medicamentos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.multiline_chart),

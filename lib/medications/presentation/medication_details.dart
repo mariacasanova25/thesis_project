@@ -10,11 +10,13 @@ class MedicationDetailsScreen extends ConsumerWidget {
   const MedicationDetailsScreen({
     super.key,
     required this.medicationId,
+    required this.prescriptionId,
     required this.selectedDate,
     required this.medicationName,
   });
 
   final String medicationId;
+  final String prescriptionId;
   final DateTime selectedDate;
   final String medicationName;
 
@@ -68,7 +70,6 @@ class MedicationDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String selectedDateForm = DateFormat('yyyy-MM-dd').format(selectedDate);
-    final medicationAsync = ref.watch(fetchMedicationProvider(medicationId));
     return Scaffold(
       appBar: AppBar(
         title: Text(medicationName),
@@ -85,7 +86,7 @@ class MedicationDetailsScreen extends ConsumerWidget {
       body: Column(
         children: [
           MedicationSchedule(
-            medicationId: medicationId,
+            prescriptionId: prescriptionId,
             date: selectedDateForm,
           ),
 

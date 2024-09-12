@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:thesis_project/medications/domain/prescription.dart';
 import 'package:thesis_project/medications/data/prescriptions_repository.dart';
+import 'package:thesis_project/medications/domain/prescription.dart';
 import 'package:thesis_project/medications/presentation/taken_med.dart';
 import 'package:thesis_project/medications/presentation/warning_frequency_violation.dart';
 
@@ -11,22 +11,22 @@ class MedicationSchedule extends ConsumerWidget {
   const MedicationSchedule({
     super.key,
     required this.date,
-    required this.medicationId,
+    required this.prescriptionId,
   });
 
-  final String medicationId;
+  final String prescriptionId;
   final String date;
 
   void _setScheduleInFirestore(
-      {required Prescription medication, List<String>? schedule}) async {
+      {required Prescription prescription, List<String>? schedule}) async {
     final user = FirebaseAuth.instance.currentUser!;
     final docRef = FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
-        .collection('medications')
-        .doc(medication.id);
+        .collection('prescriptions')
+        .doc(prescription.prescriptionId);
 
-    final scheduleToSet = schedule ?? medication.getSchedule('08h00');
+    final scheduleToSet = schedule ?? prescription.getSchedule('08h00');
 
     await docRef.set({
       'times': scheduleToSet,
@@ -90,20 +90,20 @@ class MedicationSchedule extends ConsumerWidget {
   }
 
   Future<void> _updateMedTaken(String time, int index, BuildContext context,
-      Prescription medication) async {
+      Prescription prescription) async {
     TakenMed takenMed = TakenMed();
     await takenMed.takenMed(
-      medicationId: medication.id,
+      prescriptionId: prescription.prescriptionId,
       timesIndex: index,
       selectedDate: date,
       pickedTime: time,
     );
     const snackBar = SnackBar(
       content: Text(
-        'Fantastico! Mais um passo na direção de melhorar a sua saúde!',
+        'Fantástico! Mais um passo na direção de melhorar a sua saúde!',
         textAlign: TextAlign.center,
       ),
-      duration: const Duration(seconds: 3),
+      duration: Duration(seconds: 3),
       backgroundColor: Colors.green,
       behavior: SnackBarBehavior.floating,
     );
@@ -111,35 +111,35 @@ class MedicationSchedule extends ConsumerWidget {
   }
 
   Future<void> _editSchedule(
-      int index, Prescription medication, BuildContext context) async {
+      int index, Prescription prescription, BuildContext context) async {
     TimeOfDay? selectedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(DateTime.now()),
     );
 
     if (selectedTime != null) {
-      List<String> schedule = medication.times;
-      List<String> afterSchedule =
-          medication.getSchedule('${selectedTime.hour}h${selectedTime.minute}');
+      List<String> schedule = prescription.times;
+      List<String> afterSchedule = prescription
+          .getSchedule('${selectedTime.hour}h${selectedTime.minute}');
       for (int i = 0; i < schedule.length - index; i++) {
         if (index + i < schedule.length) {
           schedule[i + index] = afterSchedule[i];
         }
       }
-      _setScheduleInFirestore(medication: medication, schedule: schedule);
+      _setScheduleInFirestore(prescription: prescription, schedule: schedule);
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userPrescriptionAsync =
-        ref.watch(watchUserPrescriptionProvider(medicationId));
+        ref.watch(watchUserPrescriptionProvider(prescriptionId));
     return Padding(
         padding: const EdgeInsets.all(16.0),
         child: userPrescriptionAsync.when(
           data: (prescription) {
             if (prescription.times.isEmpty) {
-              _setScheduleInFirestore(medication: prescription);
+              _setScheduleInFirestore(prescription: prescription);
             }
             int missingMeds =
                 prescription.nrMedsDay - prescription.getTakenMedsDay(date);
@@ -231,7 +231,7 @@ class MedicationSchedule extends ConsumerWidget {
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) =>
-              const Center(child: Text('Error loading medication data')),
+              const Center(child: Text('Erro ao carregar os dados.')),
         ));
   }
 }

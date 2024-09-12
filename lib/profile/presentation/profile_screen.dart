@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:thesis_project/profile/presentation/edit_profile_screen.dart';
 import 'package:thesis_project/profile/data/user_repository.dart';
 import 'package:thesis_project/profile/domain/user.dart';
+import 'package:thesis_project/profile/presentation/edit_profile_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -19,7 +19,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required String role,
     required String email,
     required String patientNr,
-    required String bornDate,
+    required String birthDate,
   }) async {
     final user = FirebaseAuth.instance.currentUser!;
     await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
@@ -27,7 +27,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       'email': email,
       'role': role,
       'personNr': patientNr,
-      'bornDate': DateTime.parse(bornDate),
+      'birthDate': DateTime.parse(birthDate),
     });
 
     if (mounted) {
@@ -46,7 +46,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           initEmail: user.email,
           initPatientNr: user.patientNr,
           initRole: user.role,
-          initBornDate: user.bornDate,
+          initBirthDate: user.birthDate,
           saveUserData: saveUserData,
         ),
       ),
@@ -104,7 +104,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 Text(user.patientNr, style: textTheme.headlineLarge),
                 const SizedBox(height: 16),
                 Text('Data de Nascimento', style: textTheme.headlineSmall),
-                Text(user.bornDate, style: textTheme.headlineLarge),
+                Text(user.birthDate, style: textTheme.headlineLarge),
                 const SizedBox(height: 32),
                 Center(
                   child: FilledButton.icon(
@@ -114,7 +114,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           MaterialPageRoute(
                               builder: (context) => EditProfileScreen(
                                     initUsername: user.username,
-                                    initBornDate: user.bornDate,
+                                    initBirthDate: user.birthDate,
                                     initEmail: user.email,
                                     initPatientNr: user.patientNr,
                                     initRole: user.role,

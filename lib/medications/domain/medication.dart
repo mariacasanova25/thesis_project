@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Medication {
-  const Medication({required this.id, required this.name, required this.infos});
+  const Medication(
+      {required this.medicationId, required this.name, required this.infos});
 
   final String name;
-  final String id;
+  final String medicationId;
   final Map<String, String> infos;
 
   factory Medication.fromSnapshot(
@@ -19,7 +20,7 @@ class Medication {
     return Medication(
       name: data['name'],
       infos: infos,
-      id: snapshot.id,
+      medicationId: snapshot.id,
     );
   }
 }

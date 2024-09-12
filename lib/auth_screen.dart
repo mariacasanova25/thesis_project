@@ -43,7 +43,7 @@ class _AuthScreenState extends State<AuthScreen> {
           'email': _enteredEmail,
           'role': _enteredRole,
           'personNr': _enteredPatientNr,
-          'bornDate': _selectedDate
+          'birthDate': _selectedDate
         });
       }
     } on FirebaseAuthException catch (error) {

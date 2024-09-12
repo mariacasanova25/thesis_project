@@ -58,17 +58,19 @@ class _NewMessageState extends State<NewDiscussion> {
                       labelText: 'Título da discussão... '),
                 ),
               ),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                      padding: const EdgeInsets.all(
-                          16.0), // Add padding to avoid hitting the edge
-                      child: ElevatedButton(
-                        onPressed: _submitDiscussion,
-                        style: ElevatedButton.styleFrom(
-                            textStyle: const TextStyle(fontSize: 16)),
-                        child: const Text("Adicionar"),
-                      )))
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancelar'),
+                ),
+                const SizedBox(width: 16),
+                FilledButton(
+                  onPressed: _submitDiscussion,
+                  child: const Text('Adicionar'),
+                ),
+              ]),
             ],
           ),
         ));

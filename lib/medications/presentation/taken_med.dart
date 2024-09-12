@@ -4,7 +4,7 @@ import 'package:thesis_project/medications/domain/prescription.dart';
 
 class TakenMed {
   Future<void> takenMed(
-      {required String medicationId,
+      {required String prescriptionId,
       required String selectedDate,
       required int timesIndex,
       String? pickedTime}) async {
@@ -12,8 +12,8 @@ class TakenMed {
     final docRef = FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
-        .collection('medications')
-        .doc(medicationId);
+        .collection('prescriptions')
+        .doc(prescriptionId);
 
     try {
       final docSnapshot = await docRef.get();

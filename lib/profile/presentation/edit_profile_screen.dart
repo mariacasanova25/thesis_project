@@ -9,20 +9,20 @@ class EditProfileScreen extends StatefulWidget {
     required this.initRole,
     required this.initUsername,
     required this.saveUserData,
-    required this.initBornDate,
+    required this.initBirthDate,
   });
 
   final String initUsername;
   final String initEmail;
   final String initRole;
   final String initPatientNr;
-  final String initBornDate;
+  final String initBirthDate;
   final Function({
     required String username,
     required String email,
     required String role,
     required String patientNr,
-    required String bornDate,
+    required String birthDate,
   }) saveUserData;
 
   @override
@@ -36,7 +36,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late String email;
   late String role;
   late String patientNr;
-  late String bornDate;
+  late String birthDate;
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     email = widget.initEmail;
     role = widget.initRole;
     patientNr = widget.initPatientNr;
-    bornDate = widget.initBornDate;
+    birthDate = widget.initBirthDate;
   }
 
   @override
@@ -84,9 +84,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 16),
               ProfileInfoBox(
                 label: 'Data de Nascimento',
-                initialValue: bornDate,
+                initialValue: birthDate,
                 onChanged: (value) =>
-                    setState(() => bornDate = value ?? bornDate),
+                    setState(() => birthDate = value ?? birthDate),
               ),
               const SizedBox(height: 16),
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -105,7 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           email: email,
                           role: role,
                           patientNr: patientNr,
-                          bornDate: bornDate);
+                          birthDate: birthDate);
                       Navigator.pop(context);
                     }
                   },

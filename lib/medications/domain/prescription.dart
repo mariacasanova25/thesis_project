@@ -10,13 +10,13 @@ class Prescription {
       required this.startDate,
       required this.times,
       required this.takenMeds,
-      required this.id,
+      required this.prescriptionId,
       required this.physicianId,
       required this.motive,
       required this.medicationId});
 
   final String name;
-  final String id;
+  final String prescriptionId;
   final int dosage;
   final DateTime endDate;
   final DateTime startDate;
@@ -51,7 +51,7 @@ class Prescription {
       physicianId: data['physicianId'],
       medicationId: data['medicationId'],
       takenMeds: takenMeds,
-      id: snapshot.id,
+      prescriptionId: snapshot.id,
     );
   }
 

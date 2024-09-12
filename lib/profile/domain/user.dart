@@ -8,14 +8,14 @@ class UserData {
       required this.patientNr,
       required this.role,
       required this.username,
-      required this.bornDate});
+      required this.birthDate});
 
   final String username;
   final String userId;
   final String email;
   final String role;
   final String patientNr;
-  final String bornDate;
+  final String birthDate;
 
   factory UserData.fromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
@@ -27,6 +27,6 @@ class UserData {
         patientNr: data['personNr'],
         role: data['role'],
         username: data['username'],
-        bornDate: DateFormat('yyyy-MM-dd').format(data['bornDate'].toDate()));
+        birthDate: DateFormat('yyyy-MM-dd').format(data['birthDate'].toDate()));
   }
 }
