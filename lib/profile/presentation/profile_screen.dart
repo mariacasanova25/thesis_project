@@ -53,6 +53,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  void editProfile(UserData user) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditProfileScreen(
+                  initUsername: user.username,
+                  initBirthDate: user.birthDate,
+                  initEmail: user.email,
+                  initPatientNr: user.patientNr,
+                  initRole: user.role,
+                  saveUserData: saveUserData,
+                )));
+  }
+
+  void logout() {
+    FirebaseAuth.instance.signOut();
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -63,10 +82,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         title: const Text('Perfil'),
         actions: [
           IconButton(
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.pop(context);
-            },
+            onPressed: logout,
             icon: const Icon(Icons.logout),
           )
         ],
@@ -83,44 +99,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Center(
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 44,
-                        child: Icon(Icons.account_circle, size: 88),
-                      ),
-                      SizedBox(height: 16),
-                    ],
+                  child: CircleAvatar(
+                    radius: 44,
+                    child: Icon(Icons.account_circle, size: 88),
                   ),
                 ),
+                const SizedBox(height: 32),
+                Text('Nome', style: textTheme.titleSmall),
+                Text(user.username, style: textTheme.titleLarge),
                 const SizedBox(height: 16),
-                Text('Nome', style: textTheme.headlineSmall),
-                Text(user.username, style: textTheme.headlineLarge),
+                Text('Função', style: textTheme.titleSmall),
+                Text(user.role, style: textTheme.titleLarge),
                 const SizedBox(height: 16),
-                Text('Função', style: textTheme.headlineSmall),
-                Text(user.role, style: textTheme.headlineLarge),
+                Text('Número de Utente', style: textTheme.titleSmall),
+                Text(user.patientNr, style: textTheme.titleLarge),
                 const SizedBox(height: 16),
-                Text('Número de Utente', style: textTheme.headlineSmall),
-                Text(user.patientNr, style: textTheme.headlineLarge),
-                const SizedBox(height: 16),
-                Text('Data de Nascimento', style: textTheme.headlineSmall),
-                Text(user.birthDate, style: textTheme.headlineLarge),
+                Text('Data de Nascimento', style: textTheme.titleSmall),
+                Text(user.birthDate, style: textTheme.titleLarge),
                 const SizedBox(height: 32),
                 Center(
                   child: FilledButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditProfileScreen(
-                                    initUsername: user.username,
-                                    initBirthDate: user.birthDate,
-                                    initEmail: user.email,
-                                    initPatientNr: user.patientNr,
-                                    initRole: user.role,
-                                    saveUserData: saveUserData,
-                                  )));
-                    },
+                    onPressed: () => editProfile(user),
                     label: const Text('Editar Perfil'),
                     icon: const Icon(Icons.edit),
                   ),
@@ -130,19 +129,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildProfileInfo(String label, String value, TextTheme textTheme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Text(value)),
-        ],
       ),
     );
   }

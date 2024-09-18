@@ -70,8 +70,9 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: colorScheme.primary,
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -81,7 +82,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 margin: const EdgeInsets.only(
                     top: 30, bottom: 20, left: 20, right: 20),
                 width: 200,
-                child: Image.asset('assets/images/healthcare.png'),
+                child: Image.asset(
+                  'assets/images/healthcare.png',
+                  color: colorScheme.onPrimary,
+                ),
               ),
               Card(
                 margin: const EdgeInsets.all(20),
@@ -204,10 +208,8 @@ class _AuthScreenState extends State<AuthScreen> {
                           FilledButton(
                             onPressed: _submit,
                             style: FilledButton.styleFrom(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.surface,
+                              backgroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.surface,
                             ),
                             child: Text(_isLogin ? 'Entrar' : 'Criar conta'),
                           ),
