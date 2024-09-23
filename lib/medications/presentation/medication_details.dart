@@ -1,7 +1,7 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:thesis_project/communityForum/presentation/community_forum.dart';
 import 'package:thesis_project/medications/data/medication_repository.dart';
 import 'package:thesis_project/medications/domain/prescription.dart';
 import 'package:thesis_project/medications/presentation/medication_info_card.dart';
@@ -93,29 +93,13 @@ class MedicationDetailsScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          await AwesomeNotifications().createNotification(
-            content: NotificationContent(
-                id: 0,
-                channelKey: 'channel',
-                actionType: ActionType.Default,
-                title: 'Hora de tomar ${prescription.name}',
-                body:
-                    'Ingira ${prescription.dosage} dose(s) de ${prescription.name}',
-                category: NotificationCategory.Alarm,
-                criticalAlert: true,
-                payload: {
-                  'prescriptionId': prescription.prescriptionId,
-                  'selectedDate': selectedDateForm
-                }),
-          );
-
-          /*Navigator.push(
+        onPressed: () {
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const CommunityForumScreen(),
             ),
-          );*/
+          );
         },
         icon: const Icon(Icons.messenger_outline),
         label: const Text('Enviar Mensagem'),
