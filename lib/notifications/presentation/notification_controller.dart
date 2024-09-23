@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter/material.dart';
 import 'package:thesis_project/notifications/presentation/medication_card.dart';
 
 class NotificationController {
@@ -28,15 +28,13 @@ class NotificationController {
     showDialog(
       context: appContext,
       builder: (BuildContext context) {
-        return AlertDialog(
-          content: MedicationCard(
-            onResponse: (bool taken) {
-              Navigator.of(context).pop();
-            },
-            selectedDate: payload['selectedDate'],
-            timesIndex: notificationId,
-            medicationId: payload['medicationId'],
-          ),
+        return MedicationCard(
+          onResponse: (bool taken) {
+            Navigator.of(context).pop();
+          },
+          selectedDate: payload['selectedDate'],
+          timesIndex: notificationId,
+          prescriptionId: payload['prescriptionId'],
         );
       },
     );

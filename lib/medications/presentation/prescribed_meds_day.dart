@@ -125,10 +125,8 @@ class PrescribedMedsDay extends ConsumerWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => MedicationDetailsScreen(
-                          medicationId: prescription.medicationId,
-                          prescriptionId: prescription.prescriptionId,
+                          prescription: prescription,
                           selectedDate: selectedDate,
-                          medicationName: prescription.name,
                         ),
                       ),
                     );

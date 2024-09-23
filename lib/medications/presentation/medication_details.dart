@@ -1,83 +1,82 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:thesis_project/communityForum/presentation/community_forum.dart';
 import 'package:thesis_project/medications/data/medication_repository.dart';
+import 'package:thesis_project/medications/domain/prescription.dart';
 import 'package:thesis_project/medications/presentation/medication_info_card.dart';
 import 'package:thesis_project/medications/presentation/medication_schedule.dart';
 
-class MedicationDetailsScreen extends ConsumerWidget {
+class MedicationDetailsScreen extends StatelessWidget {
   const MedicationDetailsScreen({
     super.key,
-    required this.medicationId,
-    required this.prescriptionId,
+    required this.prescription,
     required this.selectedDate,
-    required this.medicationName,
   });
 
-  final String medicationId;
-  final String prescriptionId;
+  final Prescription prescription;
   final DateTime selectedDate;
-  final String medicationName;
 
-  void _showInfoDialog(BuildContext context, WidgetRef ref) {
+  void _showInfoDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        final medicationAsync =
-            ref.watch(fetchMedicationProvider(medicationId));
+        return Consumer(
+          builder: (context, ref, _) {
+            final medicationAsync =
+                ref.watch(fetchMedicationProvider(prescription.medicationId));
+            return AlertDialog(
+              title: Text('Informações sobre ${prescription.name}'),
+              content: medicationAsync.when(
+                data: (medication) {
+                  return SizedBox(
+                    height: 300, // Adjust height as necessary
+                    width: double.maxFinite,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: medication.infos.entries.map((entry) {
+                          String key = entry.key;
+                          String value = entry.value;
+                          List<String> content = value.split(',');
 
-        return AlertDialog(
-          title: Text('Informações sobre $medicationName'),
-          content: medicationAsync.when(
-            data: (medication) {
-              return SizedBox(
-                height: 300, // Adjust height as necessary
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: medication.infos.entries.map((entry) {
-                      String key = entry.key;
-                      String value = entry.value;
-                      List<String> content = value.split(',');
-
-                      return MedicationInfoCard(title: key, content: content);
-                    }).toList(),
-                  ),
+                          return MedicationInfoCard(
+                              title: key, content: content);
+                        }).toList(),
+                      ),
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) => const SizedBox(
+                  width: 10,
+                  child: Text('Erro ao carregar informações.'),
                 ),
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => const SizedBox(
-              width: 10,
-              child: Text('Erro ao carregar informações.'),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Fechar'),
-            ),
-          ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Fechar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     String selectedDateForm = DateFormat('yyyy-MM-dd').format(selectedDate);
     return Scaffold(
       appBar: AppBar(
-        title: Text(medicationName),
+        title: Text(prescription.name),
         actions: [
           IconButton(
-            onPressed: () {
-              _showInfoDialog(context, ref);
-            },
+            onPressed: () => _showInfoDialog(context),
             icon: const Icon(Icons.info_outline),
           ),
         ],
@@ -86,7 +85,7 @@ class MedicationDetailsScreen extends ConsumerWidget {
       body: Column(
         children: [
           MedicationSchedule(
-            prescriptionId: prescriptionId,
+            prescriptionId: prescription.prescriptionId,
             date: selectedDateForm,
           ),
 
@@ -94,13 +93,29 @@ class MedicationDetailsScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await AwesomeNotifications().createNotification(
+            content: NotificationContent(
+                id: 0,
+                channelKey: 'channel',
+                actionType: ActionType.Default,
+                title: 'Hora de tomar ${prescription.name}',
+                body:
+                    'Ingira ${prescription.dosage} dose(s) de ${prescription.name}',
+                category: NotificationCategory.Alarm,
+                criticalAlert: true,
+                payload: {
+                  'prescriptionId': prescription.prescriptionId,
+                  'selectedDate': selectedDateForm
+                }),
+          );
+
+          /*Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const CommunityForumScreen(),
             ),
-          );
+          );*/
         },
         icon: const Icon(Icons.messenger_outline),
         label: const Text('Enviar Mensagem'),

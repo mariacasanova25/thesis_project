@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/profile/presentation/profile_info_box.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({
     super.key,
     required this.initEmail,
@@ -26,10 +29,10 @@ class EditProfileScreen extends StatefulWidget {
   }) saveUserData;
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late String username;
@@ -48,6 +51,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     birthDate = widget.initBirthDate;
   }
 
+  Future<void> deleteAccount() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser!;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .delete();
+      await user.delete();
+      if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
+    } catch (e) {
+      print('Error during account deletion: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -56,7 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         title: const Text('Editar Perfil'),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: deleteAccount,
             child: Text(
               'Apagar',
               style: TextStyle(color: colorScheme.error),

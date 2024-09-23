@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:thesis_project/medications/domain/prescription.dart';
 
 class AdherenceScatterChart extends StatelessWidget {
@@ -23,7 +23,10 @@ class AdherenceScatterChart extends StatelessWidget {
         days.add(date);
       }
     }
-    return days;
+    List<DateTime> lastSevenDays =
+        days.length >= 7 ? days.sublist(days.length - 7) : days;
+
+    return lastSevenDays;
   }
 
   @override

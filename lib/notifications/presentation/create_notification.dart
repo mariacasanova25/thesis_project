@@ -24,7 +24,7 @@ class CreateNotification {
           category: NotificationCategory.Alarm,
           criticalAlert: true,
           payload: {
-            'medicationId': prescription.medicationId,
+            'prescriptionId': prescription.prescriptionId,
             'selectedDate': selectedDateForm
           }),
       schedule: NotificationCalendar(
