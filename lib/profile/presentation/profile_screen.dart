@@ -116,6 +116,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 const SizedBox(height: 16),
                 Text('Data de Nascimento', style: textTheme.titleSmall),
                 Text(user.birthDate, style: textTheme.titleLarge),
+                const SizedBox(height: 16),
+                Text('Email', style: textTheme.titleSmall),
+                Text(user.email, style: textTheme.titleLarge),
                 const SizedBox(height: 32),
                 Center(
                   child: FilledButton.icon(

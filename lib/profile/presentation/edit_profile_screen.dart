@@ -116,6 +116,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     setState(() => birthDate = value ?? birthDate),
               ),
               const SizedBox(height: 16),
+              ProfileInfoBox(
+                label: 'Email',
+                initialValue: email,
+                onChanged: (value) => setState(() => email = value!),
+                isTextField: true,
+              ),
+              const SizedBox(height: 16),
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 OutlinedButton(
                   onPressed: () {
